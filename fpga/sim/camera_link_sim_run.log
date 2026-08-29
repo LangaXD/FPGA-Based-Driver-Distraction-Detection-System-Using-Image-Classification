@@ -1,0 +1,22 @@
+
+****** xsim v2017.4 (64-bit)
+  **** SW Build 2086221 on Fri Dec 15 20:55:39 MST 2017
+  **** IP Build 2085800 on Fri Dec 15 22:25:07 MST 2017
+    ** Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
+
+source xsim.dir/camera_link_sim/xsim_script.tcl
+# xsim {camera_link_sim} -autoloadwcfg -runall
+Vivado Simulator 2017.4
+Time resolution is 1 ps
+run -all
+PASS [1050325000] mples 0-5 (initial safe driving) : alert=0 as expected
+PASS [3133525000] les 6-17 (sustained distraction) : alert=1 as expected
+PASS [4348725000] o safe, alert should still hold) : alert=1 as expected
+PASS [4522325000] mple 25 (alert should now clear) : alert=0 as expected
+PASS [4695925000] ion blip, should not re-trigger) : alert=0 as expected
+PASS [4869525000] ter real sample 27 (final state) : alert=0 as expected
+
+TEST RESULT: ALL CHECKS PASSED (0 errors) - full real-data session correctly handled end to end
+$finish called at time : 4869525 ns : File "D:/MSC_PROJECT/fpga/sim/camera_link_top_tb.v" Line 162
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Aug 10 15:53:53 2026...

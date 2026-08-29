@@ -1,0 +1,26 @@
+
+****** xsim v2017.4 (64-bit)
+  **** SW Build 2086221 on Fri Dec 15 20:55:39 MST 2017
+  **** IP Build 2085800 on Fri Dec 15 22:25:07 MST 2017
+    ** Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
+
+source xsim.dir/dac_sim/xsim_script.tcl
+# xsim {dac_sim} -autoloadwcfg -runall
+Vivado Simulator 2017.4
+Time resolution is 1 ps
+run -all
+PASS [15000] after reset : alert=0 as expected
+PASS [116000] after 10 confident safe ticks : alert=0 as expected
+PASS [146000]  (transient, should be rejected) : alert=0 as expected
+PASS [156000]  to safe following a short burst : alert=0 as expected
+PASS [226000] ck before ALERT_ON_COUNT reached : alert=0 as expected
+PASS [236000]  should not itself trigger alert : alert=0 as expected
+PASS [246000] rted after sustained distraction : alert=1 as expected
+PASS [296000] ted during continued distraction : alert=1 as expected
+PASS [366000] reached, alert should still hold : alert=1 as expected
+PASS [376000] red after sustained safe driving : alert=0 as expected
+
+TEST RESULT: ALL CHECKS PASSED (0 errors)
+$finish called at time : 376 ns : File "D:/MSC_PROJECT/fpga/sim/distraction_alert_controller_tb.v" Line 135
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Aug 10 14:36:16 2026...
