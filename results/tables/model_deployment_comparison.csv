@@ -1,0 +1,4 @@
+model,test_accuracy,weighted_f1,model_size_mb,avg_inference_time_ms,fps,speed_note
+Baseline CNN,75.59948,76.572196,4.9563140869140625,56.78561051686605,17.610095073345867,trained model loaded
+MobileNetV2,84.672713,84.939332,20.782363891601562,60.07945855458578,16.64462403720633,trained model loaded
+EfficientNet-B0,82.469213,82.790838,15.753875732421875,64.51013485590616,15.501440234680363,architecture speed measured; trained accuracy from saved evaluation

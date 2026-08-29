@@ -1,0 +1,2 @@
+model_name,image_size,batch_size,epochs_requested,best_validation_accuracy,final_test_accuracy,final_test_loss,training_time_minutes,model_path
+baseline_cnn,"(224, 224)",16,20,0.6088979244232178,0.7559947967529297,0.8916622996330261,11.86705474058787,D:\MSC_PROJECT\experiments\01_baseline_cnn\best_baseline_cnn.keras

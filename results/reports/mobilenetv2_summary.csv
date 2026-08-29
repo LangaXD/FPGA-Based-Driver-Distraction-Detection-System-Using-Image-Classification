@@ -1,0 +1,2 @@
+model_name,image_size,batch_size,initial_epochs,fine_tune_epochs,best_initial_validation_accuracy,best_finetuned_validation_accuracy,final_test_accuracy,final_test_loss,initial_training_time_minutes,fine_tuning_time_minutes,model_path
+mobilenetv2_finetuned,"(224, 224)",16,10,10,0.6225646734237671,0.8211689591407776,0.8467271327972412,0.4768403172492981,13.033911323547363,18.996936523914336,D:\MSC_PROJECT\experiments\02_mobilenetv2\best_mobilenetv2_finetuned.keras

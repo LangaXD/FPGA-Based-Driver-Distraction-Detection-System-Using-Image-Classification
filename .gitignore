@@ -1,0 +1,153 @@
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.ipynb_checkpoints/
+
+
+# ============================================================
+# Virtual environments
+# ============================================================
+venv/
+env/
+.venv/
+ENV/
+.env/
+.virtualenv/
+
+
+# ============================================================
+# Environment / secret files
+# ============================================================
+.env
+.env.local
+.env.*
+
+
+# ============================================================
+# Dataset files and local datasets
+# ============================================================
+data/raw/*
+data/processed/*
+
+# Keep folder structure
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/splits/.gitkeep
+
+# Local Kaggle State Farm dataset folder
+state-farm-distracted-driver-detection/
+
+# Local multi-view dataset downloads (raw, not for GitHub)
+Sam_DD-Dataset/
+Novel_Driver_Distraction-Dataset/
+
+# Private / real test images
+real_test_images/
+
+# Compressed dataset files
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+
+# ============================================================
+# Model weights
+# ============================================================
+# Trained weights under experiments/ and fpga/deployment/ are tracked
+# on purpose so the repo is directly usable without retraining.
+# Anything else (checkpoints from ad-hoc runs, unused frameworks) stays ignored.
+*.pt
+*.pth
+*.onnx
+*.ckpt
+*.ckpt*
+
+checkpoints/
+runs/
+wandb/
+mlruns/
+
+
+# ============================================================
+# Large or temporary results
+# ============================================================
+results/raw/
+results/temp/
+
+
+# ============================================================
+# Vivado / FPGA build artifacts
+# ============================================================
+# Vivado regenerates all of this from the .tcl scripts in fpga/scripts/
+# and fpga/vivado_overlay_buzzer/ — none of it needs to be tracked.
+fpga/**/.Xil/
+fpga/**/xsim.dir/
+fpga/**/*.jou
+fpga/**/*.pb
+fpga/**/*.wdb
+fpga/**/*.dcp
+fpga/**/webtalk*
+fpga/**/*backup*
+fpga/**/*.cache/
+fpga/**/*.hw/
+fpga/**/*.ip_user_files/
+fpga/**/*.runs/
+fpga/**/*.sim/
+fpga/**/*.srcs/
+fpga/vivado_project/
+fpga/vivado_overlay_buzzer/*.xpr
+
+
+# ============================================================
+# OS files
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# ============================================================
+# IDE / editor files
+# ============================================================
+.vscode/settings.json
+.idea/
+
+
+# ============================================================
+# LaTeX temporary files
+# ============================================================
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*.xdv
+
+
+# ============================================================
+# Re-include specific FPGA evidence logs (must come after the *.log
+# rule above, since gitignore negations only win if they're the last
+# matching rule for a path)
+# ============================================================
+!fpga/sim/sim_run.log
+!fpga/sim/camera_link_sim_run.log
+!fpga/reports/synth_run.log
+!fpga/reports/real_model_session_sequence.csv

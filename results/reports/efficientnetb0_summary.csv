@@ -1,0 +1,2 @@
+model_name,image_size,batch_size,initial_epochs,fine_tune_epochs,best_initial_validation_accuracy,best_finetuned_validation_accuracy,final_test_accuracy,final_test_loss,initial_training_time_minutes,fine_tuning_time_minutes,weights_path
+efficientnetb0_finetuned,"(224, 224)",16,10,10,0.6083163619041443,0.7223029732704163,0.8246921300888062,0.5437890887260437,18.401494169235228,19.168152900536857,D:\MSC_PROJECT\experiments\03_efficientnet_b0\best_efficientnetb0_finetuned.weights.h5

@@ -1,0 +1,5 @@
+stage,runtime,accuracy_pct
+Baseline (frozen-backbone),Keras float32,59.3
+Baseline (frozen-backbone),On-device TFLite INT8,54.7
+Fine-tuned,Keras float32,80.0
+Fine-tuned,On-device TFLite INT8,77.3

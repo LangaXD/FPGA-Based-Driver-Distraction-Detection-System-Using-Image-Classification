@@ -1,0 +1,7 @@
+dataset_name,camera_views,status
+state_farm,side,in use (baseline)
+auc_v2,front (passenger-seat facing driver),recommended next - not yet requested
+100_driver,"front_left, front, front_right, side_right",candidate - not yet requested
+drive_and_act,"6 views (face, body, hands)",candidate - later phase
+sam_dd,"front, side",candidate - verify class list first
+dmd,"face, body, hands (RGB only post-2026 revision)",low priority for this task

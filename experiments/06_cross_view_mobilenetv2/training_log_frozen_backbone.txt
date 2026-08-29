@@ -1,0 +1,40 @@
+Epoch 1/10
+5013/5014 [============================>.] - ETA: 0s - loss: 1.2197 - accuracy: 0.6072
+Epoch 1: val_accuracy improved from -inf to 0.73800, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview.keras
+5014/5014 [==============================] - 664s 130ms/step - loss: 1.2197 - accuracy: 0.6072 - val_loss: 0.8690 - val_accuracy: 0.7380
+Epoch 2/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.8147 - accuracy: 0.7381
+Epoch 2: val_accuracy improved from 0.73800 to 0.77083, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview.keras
+5014/5014 [==============================] - 636s 127ms/step - loss: 0.8147 - accuracy: 0.7381 - val_loss: 0.7514 - val_accuracy: 0.7708
+Epoch 3/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.6853 - accuracy: 0.7819
+Epoch 3: val_accuracy improved from 0.77083 to 0.78384, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview.keras
+5014/5014 [==============================] - 632s 126ms/step - loss: 0.6853 - accuracy: 0.7819 - val_loss: 0.7143 - val_accuracy: 0.7838
+Epoch 4/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.6232 - accuracy: 0.8017
+Epoch 4: val_accuracy improved from 0.78384 to 0.79259, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview.keras
+5014/5014 [==============================] - 634s 126ms/step - loss: 0.6232 - accuracy: 0.8017 - val_loss: 0.6760 - val_accuracy: 0.7926
+Epoch 5/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.5811 - accuracy: 0.8165
+Epoch 5: val_accuracy improved from 0.79259 to 0.79264, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview.keras
+5014/5014 [==============================] - 634s 126ms/step - loss: 0.5811 - accuracy: 0.8165 - val_loss: 0.6538 - val_accuracy: 0.7926
+Epoch 6/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.5567 - accuracy: 0.8214
+Epoch 6: val_accuracy did not improve from 0.79264
+5014/5014 [==============================] - 643s 128ms/step - loss: 0.5567 - accuracy: 0.8214 - val_loss: 0.6688 - val_accuracy: 0.7906
+Epoch 7/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.5336 - accuracy: 0.8281
+Epoch 7: val_accuracy did not improve from 0.79264
+5014/5014 [==============================] - 639s 127ms/step - loss: 0.5336 - accuracy: 0.8281 - val_loss: 0.6861 - val_accuracy: 0.7857
+Epoch 8/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.5196 - accuracy: 0.8319
+Epoch 8: val_accuracy did not improve from 0.79264
+5014/5014 [==============================] - 642s 128ms/step - loss: 0.5196 - accuracy: 0.8319 - val_loss: 0.6958 - val_accuracy: 0.7819
+Epoch 9/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.5080 - accuracy: 0.8353
+Epoch 9: val_accuracy did not improve from 0.79264
+5014/5014 [==============================] - 642s 128ms/step - loss: 0.5080 - accuracy: 0.8353 - val_loss: 0.6831 - val_accuracy: 0.7851
+Epoch 10/10
+5013/5014 [============================>.] - ETA: 0s - loss: 0.4977 - accuracy: 0.8387
+Epoch 10: val_accuracy improved from 0.79264 to 0.80064, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview.keras
+5014/5014 [==============================] - 641s 128ms/step - loss: 0.4977 - accuracy: 0.8387 - val_loss: 0.6417 - val_accuracy: 0.8006

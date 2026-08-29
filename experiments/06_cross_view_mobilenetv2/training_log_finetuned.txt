@@ -1,0 +1,164 @@
+TensorFlow: 2.10.0
+GPU devices: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+=== STAGE: load-data ===
+Train: (80211, 12) Val: (19763, 12) Test: (17992, 12)
+2026-08-14 23:28:05.631471: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2026-08-14 23:28:06.531293: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1616] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 3472 MB memory:  -> device: 0, name: NVIDIA GeForce RTX 3060 Laptop GPU, pci bus id: 0000:01:00.0, compute capability: 8.6
+=== STAGE: load-checkpoint ===
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting ImageProjectiveTransformV3 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting ImageProjectiveTransformV3 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformFullIntV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomGetKeyCounter cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting AdjustContrastv2 cause Input "contrast_factor" of op 'AdjustContrastv2' expected to be loop invariant.
+Model: "model"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ input_1 (InputLayer)        [(None, 224, 224, 3)]     0         
+                                                                 
+ safe_augmentation (Sequenti  (None, 224, 224, 3)      0         
+ al)                                                             
+                                                                 
+ tf.math.truediv (TFOpLambda  (None, 224, 224, 3)      0         
+ )                                                               
+                                                                 
+ tf.math.subtract (TFOpLambd  (None, 224, 224, 3)      0         
+ a)                                                              
+                                                                 
+ mobilenetv2_1.00_224 (Funct  (None, 7, 7, 1280)       2257984   
+ ional)                                                          
+                                                                 
+ global_average_pooling2d (G  (None, 1280)             0         
+ lobalAveragePooling2D)                                          
+                                                                 
+ dropout (Dropout)           (None, 1280)              0         
+                                                                 
+ dense (Dense)               (None, 10)                12810     
+                                                                 
+=================================================================
+Total params: 2,270,794
+Trainable params: 12,810
+Non-trainable params: 2,257,984
+_________________________________________________________________
+None
+=== STAGE: unfreeze ===
+Trainable params: 1539210
+=== STAGE: fine-tune-training-start ===
+Epoch 1/10
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting ImageProjectiveTransformV3 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting ImageProjectiveTransformV3 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformFullIntV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomGetKeyCounter cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting AdjustContrastv2 cause Input "contrast_factor" of op 'AdjustContrastv2' expected to be loop invariant.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting ImageProjectiveTransformV3 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting ImageProjectiveTransformV3 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting RngReadAndSkip cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting Bitcast cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformFullIntV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomGetKeyCounter cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting StatelessRandomUniformV2 cause there is no registered converter for this op.
+WARNING:tensorflow:Using a while_loop for converting AdjustContrastv2 cause Input "contrast_factor" of op 'AdjustContrastv2' expected to be loop invariant.
+2026-08-14 23:28:15.077023: I tensorflow/stream_executor/cuda/cuda_dnn.cc:384] Loaded cuDNN version 8101
+2026-08-14 23:28:19.060595: I tensorflow/stream_executor/cuda/cuda_blas.cc:1614] TensorFloat-32 will be used for the matrix multiplication. This will only be logged once.
+
+Epoch 1: val_accuracy improved from -inf to 0.88357, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview_finetuned.keras
+5014/5014 - 736s - loss: 0.2375 - accuracy: 0.9253 - val_loss: 0.3496 - val_accuracy: 0.8836 - lr: 1.0000e-05 - 736s/epoch - 147ms/step
+Epoch 2/10
+
+Epoch 2: val_accuracy improved from 0.88357 to 0.89162, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview_finetuned.keras
+5014/5014 - 792s - loss: 0.0956 - accuracy: 0.9709 - val_loss: 0.3142 - val_accuracy: 0.8916 - lr: 1.0000e-05 - 792s/epoch - 158ms/step
+Epoch 3/10
+
+Epoch 3: val_accuracy did not improve from 0.89162
+5014/5014 - 745s - loss: 0.0574 - accuracy: 0.9823 - val_loss: 0.3658 - val_accuracy: 0.8832 - lr: 1.0000e-05 - 745s/epoch - 149ms/step
+Epoch 4/10
+
+Epoch 4: val_accuracy did not improve from 0.89162
+5014/5014 - 708s - loss: 0.0406 - accuracy: 0.9870 - val_loss: 0.3449 - val_accuracy: 0.8839 - lr: 1.0000e-05 - 708s/epoch - 141ms/step
+Epoch 5/10
+
+Epoch 5: val_accuracy improved from 0.89162 to 0.91241, saving model to D:\MSC_PROJECT\experiments\06_cross_view_mobilenetv2\best_mobilenetv2_crossview_finetuned.keras
+5014/5014 - 696s - loss: 0.0298 - accuracy: 0.9902 - val_loss: 0.2935 - val_accuracy: 0.9124 - lr: 1.0000e-05 - 696s/epoch - 139ms/step
+Epoch 6/10
+
+Epoch 6: val_accuracy did not improve from 0.91241
+5014/5014 - 639s - loss: 0.0235 - accuracy: 0.9923 - val_loss: 0.3242 - val_accuracy: 0.9019 - lr: 1.0000e-05 - 639s/epoch - 128ms/step
+Epoch 7/10
+
+Epoch 7: val_accuracy did not improve from 0.91241
+5014/5014 - 631s - loss: 0.0203 - accuracy: 0.9934 - val_loss: 0.4134 - val_accuracy: 0.8909 - lr: 1.0000e-05 - 631s/epoch - 126ms/step
+Epoch 8/10
+
+Epoch 8: val_accuracy did not improve from 0.91241
+
+Epoch 8: ReduceLROnPlateau reducing learning rate to 1.9999999494757505e-06.
+5014/5014 - 626s - loss: 0.0166 - accuracy: 0.9941 - val_loss: 0.4750 - val_accuracy: 0.8796 - lr: 1.0000e-05 - 626s/epoch - 125ms/step
+Epoch 9/10
+
+Epoch 9: val_accuracy did not improve from 0.91241
+5014/5014 - 627s - loss: 0.0089 - accuracy: 0.9966 - val_loss: 0.3779 - val_accuracy: 0.8994 - lr: 2.0000e-06 - 627s/epoch - 125ms/step
+Epoch 10/10
+
+Epoch 10: val_accuracy did not improve from 0.91241
+Restoring model weights from the end of the best epoch: 5.
+5014/5014 - 627s - loss: 0.0086 - accuracy: 0.9966 - val_loss: 0.3748 - val_accuracy: 0.9007 - lr: 2.0000e-06 - 627s/epoch - 125ms/step
+Epoch 10: early stopping
+=== STAGE: fine-tune-training-done (113.8 min) ===
+=== STAGE: evaluate-mixed ===
+1125/1125 - 32s - loss: 0.2902 - accuracy: 0.9176 - 32s/epoch - 29ms/step
+Fine-tuned mixed-view test accuracy: 0.9176300764083862
+1125/1125 - 19s - 19s/epoch - 17ms/step
+                      precision    recall  f1-score      support
+safe_driving           0.943795  0.977015  0.960118   9006.00000
+texting_right          0.924354  0.765470  0.837443   1309.00000
+phone_right            0.839514  0.985736  0.906768   1332.00000
+texting_left           0.974170  0.821151  0.891139   1286.00000
+phone_left             0.906086  0.899329  0.902695   1341.00000
+adjusting_radio        0.974277  0.926606  0.949843    327.00000
+drinking               0.840063  0.833464  0.836751   1273.00000
+reaching_behind        0.953488  0.883832  0.917340    835.00000
+hair_or_makeup         0.866795  0.876098  0.871422   1025.00000
+talking_to_passenger   0.603604  0.519380  0.558333    258.00000
+accuracy               0.917630  0.917630  0.917630      0.91763
+macro avg              0.882615  0.848808  0.863185  17992.00000
+weighted avg           0.918420  0.917630  0.916318  17992.00000
+=== STAGE: evaluate-per-view ===
+  camera_view  num_test_images  test_accuracy  test_loss
+0        side            10539       0.910523   0.295808
+1       front             7453       0.927680   0.282159
+=== STAGE: all-done ===
+FINETUNE_SUCCESS

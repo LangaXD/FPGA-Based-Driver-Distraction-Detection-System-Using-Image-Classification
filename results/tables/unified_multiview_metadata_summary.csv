@@ -1,0 +1,16 @@
+dataset_name,camera_view,lighting,split,num_images
+low_light_dd,side,day,test,7500
+low_light_dd,side,day,train,31425
+low_light_dd,side,day,val,6675
+low_light_dd,side,night,test,1500
+low_light_dd,side,night,train,4500
+low_light_dd,side,night,val,750
+sam_dd,front,indoor_artificial,test,7453
+sam_dd,front,indoor_artificial,train,32156
+sam_dd,front,indoor_artificial,val,8162
+sam_dd,side,indoor_artificial,test,7453
+sam_dd,side,indoor_artificial,train,32156
+sam_dd,side,indoor_artificial,val,8162
+state_farm,side,day,test,3086
+state_farm,side,day,train,15899
+state_farm,side,day,val,3439

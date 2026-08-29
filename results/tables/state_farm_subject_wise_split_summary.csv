@@ -1,0 +1,4 @@
+split,num_images,num_subjects,subjects
+train,15899,18,"p014, p015, p016, p021, p022, p024, p039, p042, p047, p049, p051, p052, p056, p061, p064, p066, p072, p081"
+validation,3439,4,"p026, p035, p041, p050"
+test,3086,4,"p002, p012, p045, p075"

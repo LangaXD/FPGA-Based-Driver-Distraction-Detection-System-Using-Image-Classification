@@ -1,0 +1,5 @@
+image,source,true_label,baseline_prediction,mobilenet_prediction,efficientnet_prediction,observation
+state_farm_c0_img_44733,State Farm dataset,c0 - safe driving,c0 - safe driving,c0 - safe driving,c0 - safe driving,All models predicted correctly on dataset-style image.
+my_test_1,Own real image,c6 - drinking,c5 - operating the radio,c7 - reaching behind,c6 - drinking,EfficientNet-B0 correctly identified drinking; other models were affected by out-of-domain background.
+my_test_2,Own real image,c6 - drinking,c5 - operating the radio,c6 - drinking,c5 - operating the radio,MobileNetV2 correctly identified drinking when the hand and can were more visible.
+my_test_3,Own real image,c4 - talking on the phone left,c5 - operating the radio,c8 - hair and makeup,c4 - talking on the phone left,EfficientNet-B0 correctly identified phone use with the left hand.

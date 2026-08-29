@@ -1,0 +1,11 @@
+classname,class_name,train,validation,test
+c0,safe driving,1766,407,316
+c1,texting right,1623,319,325
+c2,talking on the phone right,1649,330,338
+c3,texting left,1646,378,322
+c4,talking on the phone left,1623,358,345
+c5,operating the radio,1614,371,327
+c6,drinking,1649,365,311
+c7,reaching behind,1383,326,293
+c8,hair and makeup,1383,277,251
+c9,talking to passenger,1563,308,258

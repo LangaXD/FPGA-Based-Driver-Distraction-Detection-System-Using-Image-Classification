@@ -1,0 +1,11 @@
+,c0 - safe driving,c1 - texting right,c2 - talking on the phone right,c3 - texting left,c4 - talking on the phone left,c5 - operating the radio,c6 - drinking,c7 - reaching behind,c8 - hair and makeup,c9 - talking to passenger
+c0 - safe driving,239,5,1,0,0,0,0,0,3,68
+c1 - texting right,8,217,2,5,0,0,43,2,27,21
+c2 - talking on the phone right,0,1,323,0,0,0,12,1,1,0
+c3 - texting left,3,1,0,314,0,0,0,0,4,0
+c4 - talking on the phone left,2,0,1,4,313,0,5,0,20,0
+c5 - operating the radio,11,0,0,0,0,302,0,1,1,12
+c6 - drinking,1,0,0,0,0,0,290,0,20,0
+c7 - reaching behind,23,0,0,0,0,0,0,264,2,4
+c8 - hair and makeup,7,1,1,0,25,0,4,2,202,9
+c9 - talking to passenger,66,1,0,0,0,0,0,2,40,149
