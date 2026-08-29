@@ -1,0 +1,24 @@
+This file is a placeholder, not real Firebase config. It uses the
+".PLACEHOLDER" extension specifically so the google-services Gradle plugin
+does NOT try to parse it as JSON and does NOT fail the build by its mere
+presence - Gradle only looks for a file literally named "google-services.json".
+
+To build and run this app for real:
+
+  1. Create a Firebase project at https://console.firebase.google.com
+     (any Google account works; use your university or personal account).
+  2. In that project, add an Android app with package name:
+         com.msc.distractionalert
+     (must match applicationId / namespace in app/build.gradle exactly).
+  3. Download the google-services.json file Firebase generates for that app.
+  4. Place it at:
+         app/google-services.json
+     (i.e. delete or ignore this placeholder - the real file goes in the same
+     folder, app/, next to build.gradle).
+  5. Re-sync Gradle in Android Studio.
+
+Full walkthrough: see FIREBASE_SETUP.md in the project root.
+
+Until step 3-4 are done, the project will fail to build, because the
+google-services plugin (applied in app/build.gradle) requires a real
+app/google-services.json to be present.

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1565C0</color>
+    <color name="primary_dark">#0D47A1</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="secondary">#EF6C00</color>
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#1B1B1B</color>
+    <color name="error">#B3261E</color>
+
+    <!-- Chart bar colors, one per distraction class, in a stable order matching
+         DistractionClass.ALL so the legend and bars stay visually consistent. -->
+    <color name="chart_1">#1565C0</color>
+    <color name="chart_2">#EF6C00</color>
+    <color name="chart_3">#2E7D32</color>
+    <color name="chart_4">#8E24AA</color>
+    <color name="chart_5">#C62828</color>
+    <color name="chart_6">#00838F</color>
+    <color name="chart_7">#F9A825</color>
+    <color name="chart_8">#5D4037</color>
+    <color name="chart_9">#455A64</color>
+    <color name="chart_10">#AD1457</color>
+</resources>

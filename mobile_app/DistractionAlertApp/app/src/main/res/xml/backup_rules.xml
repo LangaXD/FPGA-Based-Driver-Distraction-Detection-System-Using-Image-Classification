@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Excludes the prefs file (auth token, server URL) from Android's auto backup,
+     since a restored token from a previous install would just be stale/invalid. -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="distraction_alert_prefs.xml" />
+</full-backup-content>

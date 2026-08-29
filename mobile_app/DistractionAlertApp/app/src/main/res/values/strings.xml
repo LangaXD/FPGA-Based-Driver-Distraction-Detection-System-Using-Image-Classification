@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Distraction Alert</string>
+
+    <!-- Login -->
+    <string name="login_subtitle">Sign in to receive driver-distraction alerts</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Log in</string>
+
+    <!-- Main / tabs -->
+    <string name="tab_history">History</string>
+    <string name="tab_stats">Stats</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- History -->
+    <string name="empty_history">No alerts yet.\nPull down to refresh.</string>
+    <string name="refresh_failed">Couldn\'t refresh alerts: %1$s</string>
+    <string name="alert_image_description">Photo captured when this alert fired</string>
+
+    <!-- Chart -->
+    <string name="chart_title">Alerts by distraction class</string>
+    <string name="empty_chart">No alert data to chart yet.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="server_url_label">Server URL</string>
+    <string name="server_url_hint">http://host:port</string>
+    <string name="save_button">Save</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="push_notifications_label">Push notifications</string>
+    <string name="push_notifications_summary">Show a notification when the board reports sustained distraction</string>
+    <string name="logout_button">Log out</string>
+
+    <!-- Notification channel -->
+    <string name="notification_channel_id">distraction_alerts</string>
+    <string name="notification_channel_name">Distraction alerts</string>
+    <string name="notification_channel_description">Alerts pushed from the driver-distraction detection board</string>
+</resources>
