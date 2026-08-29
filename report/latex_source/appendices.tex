@@ -1,0 +1,436 @@
+%!TEX root = main.tex
+
+\chapter{Systematic Search and Screening Detail}
+\label{app:prisma}
+
+Supporting evidence for Section~\ref{sec:lit-prisma}. The search was carried out in June 2026. Table~\ref{tab:app-sources} gives the per-source breakdown of the 90 records found before duplicates were removed. Table~\ref{tab:app-prisma-stages} gives the stage-by-stage screening counts summarised in Figure~\ref{fig:prisma}.
+
+\begin{table}[htbp]
+\centering
+\caption{Search sources and initial records identified (before duplicate removal).}
+\label{tab:app-sources}
+\small
+\begin{tabularx}{\textwidth}{lcY}
+\toprule
+\textbf{Source} & \textbf{Records} & \textbf{Main focus of results} \\
+\midrule
+IEEE Xplore & 32 & Driver distraction, CNNs, FPGA, low-light NoIR and IR/NIR studies \\
+Google Scholar & 24 & Citation search, arXiv papers, dataset papers, review studies \\
+SpringerLink & 8 & Driver monitoring, edge/cloud systems, deep learning \\
+Elsevier / ScienceDirect-related & 8 & Intelligent systems, driver behaviour, accident-related monitoring \\
+MDPI & 7 & Sensors, driver state monitoring, multimodal recognition \\
+Dataset repositories, citation tracking & 6 & Mendeley low-light dataset, DMD, Zenodo dataset records \\
+arXiv and preprint sources & 5 & DMD, edge AI, synthetic data, emerging methods \\
+\midrule
+\textbf{Total identified} & \textbf{90} & Records before duplicate removal \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{PRISMA-style screening stages.}
+\label{tab:app-prisma-stages}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Stage} & \textbf{Records} \\
+\midrule
+Identified from databases and citation search & 90 \\
+Duplicates removed & $-22$ \\
+Screened by title and abstract & 68 \\
+Excluded at title/abstract screening & $-29$ \\
+Full-text papers assessed for eligibility & 39 \\
+Excluded after full-text assessment & $-8$ \\
+Eligible papers & 31 \\
+\midrule
+Core studies selected for detailed comparison & 20 \\
+Retained as supporting literature & 11 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Records were excluded at title and abstract screening for being outside the scope of camera-based driver monitoring, too general to give technical detail, or technically incomplete. Records were excluded at full-text assessment for lacking a clear dataset, method, evaluation result or stated technical contribution. The inclusion criteria covered studies using RGB, low-light, NoIR, IR, NIR, depth, thermal or multimodal sensing and studies reporting a dataset, camera setup, metrics or split protocol.
+
+\chapter{Dataset Splits and Composition}
+\label{app:splits}
+
+Supporting evidence for Section~\ref{sec:method-split-integrity} and Table~\ref{tab:split-integrity}. Table~\ref{tab:app-sf-subjects} lists the State Farm driver identifiers for each partition. These were fixed once and reused without change across the baseline, cross-view and lighting stages, so no driver ever moved between partitions during the project.
+
+\begin{table}[htbp]
+\centering
+\caption{State Farm subject-wise split, by driver identifier.}
+\label{tab:app-sf-subjects}
+\small
+\begin{tabularx}{\textwidth}{lccY}
+\toprule
+\textbf{Split} & \textbf{Images} & \textbf{Drivers} & \textbf{Driver identifiers} \\
+\midrule
+Train & 15{,}899 & 18 & p014, p015, p016, p021, p022, p024, p039, p042, p047, p049, p051, p052, p056, p061, p064, p066, p072, p081 \\
+Validation & 3{,}439 & 4 & p026, p035, p041, p050 \\
+Test & 3{,}086 & 4 & p002, p012, p045, p075 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Composition of the unified multi-view metadata table (170{,}316 rows).}
+\label{tab:app-unified}
+\small
+\begin{tabular}{lllrrr}
+\toprule
+\textbf{Dataset} & \textbf{View} & \textbf{Lighting} & \textbf{Train} & \textbf{Val} & \textbf{Test} \\
+\midrule
+State Farm & side & day & 15{,}899 & 3{,}439 & 3{,}086 \\
+SAM-DD & front & indoor artificial & 32{,}156 & 8{,}162 & 7{,}453 \\
+SAM-DD & side & indoor artificial & 32{,}156 & 8{,}162 & 7{,}453 \\
+Low-Light DD & side & night & 4{,}500 & 750 & 1{,}500 \\
+Low-Light DD & side & day & 31{,}425 & 6{,}675 & 7{,}500 \\
+\midrule
+\multicolumn{3}{l}{Cross-view experiment (State Farm + SAM-DD)} & 80{,}211 & 19{,}763 & 17{,}992 \\
+\multicolumn{3}{l}{Lighting experiment (State Farm + Low-Light night)} & 20{,}399 & 4{,}189 & 4{,}586 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Low-Light DD daytime rows appear in the unified table but are left out of the lighting experiment on purpose, for the reason given in Section~\ref{sec:method-lowlight-data}. Figures~\ref{fig:app-sf-classes} and~\ref{fig:app-sf-subjects} show the State Farm class and per-driver image distributions behind these splits.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\centering\includegraphics[width=\linewidth]{state_farm_class_distribution.png}
+		\caption{Class distribution}
+		\label{fig:app-sf-classes}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.49\textwidth}
+		\centering\includegraphics[width=\linewidth]{state_farm_subject_distribution.png}
+		\caption{Images per driver}
+		\label{fig:app-sf-subjects}
+	\end{subfigure}
+	\caption{State Farm dataset composition.}
+	\label{fig:app-sf-composition}
+\end{figure}
+
+\chapter{Full Per-Class Classification Reports}
+\label{app:classreports}
+
+Supporting evidence for Sections~\ref{sec:qr-baseline}, \ref{sec:qr-crossview}, \ref{sec:qr-lowlight} and~\ref{sec:qr-class-errors}. All figures are computed on the held-out subject-wise test partitions listed in Appendix~\ref{app:splits}. The source CSV files are supplied with the code artefact under \texttt{results/reports/}.
+
+\begin{table}[htbp]
+\centering
+\caption{Per-class F1 for the three single-view baseline models, State Farm test set.}
+\label{tab:app-sf-f1}
+\small
+\begin{tabular}{lcccr}
+\toprule
+\textbf{Class} & \textbf{Baseline CNN} & \textbf{MobileNetV2} & \textbf{EfficientNet-B0} & \textbf{Support} \\
+\midrule
+c0 safe driving & 0.620 & 0.707 & 0.738 & 316 \\
+c1 texting right & 0.747 & 0.788 & 0.888 & 325 \\
+c2 phone right & 0.928 & 0.970 & 0.966 & 338 \\
+c3 texting left & 0.901 & 0.974 & 0.971 & 322 \\
+c4 phone left & 0.944 & 0.917 & 0.880 & 345 \\
+c5 operating radio & 0.783 & 0.960 & 0.900 & 327 \\
+c6 drinking & 0.884 & 0.872 & 0.817 & 311 \\
+c7 reaching behind & 0.698 & 0.935 & 0.878 & 293 \\
+c8 hair and makeup & 0.619 & 0.708 & 0.600 & 251 \\
+c9 talking to passenger & 0.403 & 0.572 & 0.520 & 258 \\
+\midrule
+Macro average & 0.753 & \textbf{0.840} & 0.816 & 3{,}086 \\
+Weighted average & 0.766 & \textbf{0.849} & 0.828 & 3{,}086 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{MobileNetV2 full per-class report, State Farm subject-wise test set (accuracy 84.67\%).}
+\label{tab:app-mnv2}
+\small
+\begin{tabular}{lcccr}
+\toprule
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Support} \\
+\midrule
+c0 safe driving & 0.664 & 0.756 & 0.707 & 316 \\
+c1 texting right & 0.960 & 0.668 & 0.788 & 325 \\
+c2 phone right & 0.985 & 0.956 & 0.970 & 338 \\
+c3 texting left & 0.972 & 0.975 & 0.974 & 322 \\
+c4 phone left & 0.926 & 0.907 & 0.917 & 345 \\
+c5 operating radio & 1.000 & 0.924 & 0.960 & 327 \\
+c6 drinking & 0.819 & 0.932 & 0.872 & 311 \\
+c7 reaching behind & 0.971 & 0.901 & 0.935 & 293 \\
+c8 hair and makeup & 0.631 & 0.805 & 0.708 & 251 \\
+c9 talking to passenger & 0.567 & 0.578 & 0.572 & 258 \\
+\midrule
+Macro average & 0.849 & 0.840 & 0.840 & 3{,}086 \\
+Weighted average & 0.861 & 0.847 & 0.849 & 3{,}086 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Cross-view MobileNetV2, frozen-backbone against fine-tuned, mixed-view test set (17{,}992 images).}
+\label{tab:app-crossview}
+\footnotesize
+\begin{tabular}{lrcccccc}
+\toprule
+& & \multicolumn{3}{c}{\textbf{Frozen-backbone} (75.94\%)} & \multicolumn{3}{c}{\textbf{Fine-tuned} (91.76\%)} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+\textbf{Class} & \textbf{Support} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{P} & \textbf{R} & \textbf{F1} \\
+\midrule
+safe\_driving & 9{,}006 & 0.887 & 0.881 & 0.884 & 0.944 & 0.977 & 0.960 \\
+texting\_right & 1{,}309 & 0.687 & 0.502 & 0.580 & 0.924 & 0.765 & 0.837 \\
+phone\_right & 1{,}332 & 0.722 & 0.642 & 0.680 & 0.840 & 0.986 & 0.907 \\
+texting\_left & 1{,}286 & 0.422 & 0.768 & 0.545 & 0.974 & 0.821 & 0.891 \\
+phone\_left & 1{,}341 & 0.591 & 0.782 & 0.673 & 0.906 & 0.899 & 0.903 \\
+adjusting\_radio & 327 & 0.928 & 0.746 & 0.827 & 0.974 & 0.927 & 0.950 \\
+drinking & 1{,}273 & 0.754 & 0.610 & 0.675 & 0.840 & 0.833 & 0.837 \\
+reaching\_behind & 835 & 0.884 & 0.695 & 0.778 & 0.953 & 0.884 & 0.917 \\
+hair\_or\_makeup & 1{,}025 & 0.696 & 0.537 & 0.606 & 0.867 & 0.876 & 0.871 \\
+talking\_to\_passenger & 258 & 0.614 & 0.136 & 0.222 & 0.604 & 0.519 & 0.558 \\
+\midrule
+Macro average & 17{,}992 & 0.719 & 0.630 & 0.647 & 0.883 & 0.849 & 0.863 \\
+Weighted average & 17{,}992 & 0.781 & 0.759 & 0.761 & 0.918 & 0.918 & 0.916 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Lighting stage: day-only baseline (night-only test set, 1{,}500 images), frozen-backbone and fine-tuned (merged day+night test set, 4{,}586 images). The baseline's zero-recall rows are the collapse described in Section~\ref{sec:qr-lowlight}.}
+\label{tab:app-lowlight}
+\footnotesize
+\begin{tabular}{lcccccccc}
+\toprule
+& \multicolumn{2}{c}{\textbf{Baseline} (19.53\%)} & \multicolumn{3}{c}{\textbf{Frozen} (62.30\%)} & \multicolumn{3}{c}{\textbf{Fine-tuned} (77.91\%)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}\cmidrule(lr){7-9}
+\textbf{Class} & \textbf{P} & \textbf{R} & \textbf{P} & \textbf{R} & \textbf{F1} & \textbf{P} & \textbf{R} & \textbf{F1} \\
+\midrule
+safe\_driving & 0.000 & 0.000 & 0.559 & 0.712 & 0.626 & 0.551 & 0.845 & 0.667 \\
+texting\_right & 0.000 & 0.000 & 0.721 & 0.451 & 0.554 & 0.986 & 0.459 & 0.626 \\
+phone\_right & 0.000 & 0.000 & 0.689 & 0.598 & 0.640 & 0.900 & 0.883 & 0.891 \\
+texting\_left & 0.170 & 0.993 & 0.720 & 0.676 & 0.697 & 0.965 & 0.648 & 0.776 \\
+phone\_left & 0.000 & 0.000 & 0.780 & 0.523 & 0.626 & 0.926 & 0.653 & 0.765 \\
+adjusting\_radio & 0.000 & 0.000 & 0.732 & 0.851 & 0.787 & 0.998 & 0.960 & 0.979 \\
+drinking & 0.000 & 0.000 & 0.392 & 0.764 & 0.518 & 0.638 & 0.889 & 0.743 \\
+reaching\_behind & 0.233 & 0.960 & 0.784 & 0.858 & 0.819 & 0.880 & 0.975 & 0.925 \\
+hair\_or\_makeup & 0.000 & 0.000 & 0.423 & 0.414 & 0.419 & 0.596 & 0.663 & 0.628 \\
+talking\_to\_passenger & 0.000 & 0.000 & 0.820 & 0.336 & 0.477 & 0.719 & 0.821 & 0.767 \\
+\midrule
+Macro average & 0.040 & 0.195 & 0.662 & 0.618 & 0.616 & 0.816 & 0.780 & 0.777 \\
+Weighted average & 0.040 & 0.195 & 0.664 & 0.623 & 0.621 & 0.822 & 0.779 & 0.779 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter{Quantisation Raw Figures}
+\label{app:quant}
+
+Supporting evidence for Section~\ref{sec:qr-quantisation} and Table~\ref{tab:consolidated}. Exact file sizes were read directly from the filesystem. Megabyte figures are bytes divided by $1024^2$, matching the convention used in the project's own results tables.
+
+\begin{table}[htbp]
+\centering
+\caption{Exact model artefact sizes.}
+\label{tab:app-sizes}
+\small
+\begin{tabularx}{\textwidth}{Ylrr}
+\toprule
+\textbf{Artefact} & \textbf{Format} & \textbf{Bytes} & \textbf{MB} \\
+\midrule
+\texttt{best\_mobilenetv2\_crossview\_finetuned.keras} & Keras float32 & 21{,}791{,}872 & 20.78 \\
+\texttt{mobilenetv2\_crossview\_finetuned\_int8.tflite} & TFLite INT8 & 2{,}723{,}448 & 2.60 \\
+\texttt{mobilenetv2\_crossview\_int8.tflite} & TFLite INT8 & 2{,}721{,}672 & 2.60 \\
+\texttt{mobilenetv2\_crossview\_dynamicrange.tflite} & TFLite dynamic range & 2{,}518{,}480 & 2.40 \\
+\midrule
+\multicolumn{2}{l}{Compression ratio, float32 to INT8} & \multicolumn{2}{r}{\textbf{8.00$\times$}} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Quantisation before/after measurements. All samples are drawn from held-out subject-wise test partitions.}
+\label{tab:app-quant}
+\small
+\begin{tabularx}{\textwidth}{YllccY}
+\toprule
+\textbf{Model} & \textbf{Sample} & \textbf{$n$} & \textbf{Float32} & \textbf{INT8} & \textbf{Agreement} \\
+\midrule
+Cross-view frozen & mixed front+side & 500 & 76.80\% & 76.00\% & 91.2\% \\
+Cross-view frozen & random \texttt{side} & 300 & 59.30\% & 54.70\% & --- \\
+Cross-view fine-tuned & random \texttt{side} & 300 & 80.00\% & 77.30\% & --- \\
+Cross-view fine-tuned & held-out sample & 100 & \multicolumn{2}{c}{Keras vs. TFLite} & 100/100 \\
+Cross-view fine-tuned & held-out sample & 100 & \multicolumn{2}{c}{board vs. laptop} & 100/100 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The two board-versus-laptop agreement rows are the measurements that show the from-source ARM32 runtime is numerically faithful (Section~\ref{sec:qr-runtime-correctness}). A dynamic-range variant was also produced and checked. It was not deployed, because the INT8 variant was the one carried through the accuracy evaluation.
+
+\chapter{FPGA Synthesis Report Excerpts}
+\label{app:fpga}
+
+Supporting evidence for Section~\ref{sec:qr-fpga}. Excerpts are taken word for word from \texttt{fpga/\allowbreak reports/\allowbreak utilization.rpt} and \texttt{fpga/\allowbreak reports/\allowbreak timing\_summary.rpt}, produced by Vivado 2017.4 targeting \texttt{7a35tcpg236-1}, design state ``Synthesized'', out-of-context.
+
+\begin{table}[htbp]
+\centering
+\caption{Slice logic utilisation (from \texttt{utilization.rpt}).}
+\label{tab:app-util}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Site type} & \textbf{Used} & \textbf{Available} & \textbf{Util.\%} \\
+\midrule
+Slice LUTs & 18 & 20{,}800 & 0.09 \\
+\quad LUT as logic & 18 & 20{,}800 & 0.09 \\
+\quad LUT as memory & 0 & 9{,}600 & 0.00 \\
+Slice registers & 13 & 41{,}600 & 0.03 \\
+\quad Register as flip-flop & 13 & 41{,}600 & 0.03 \\
+\quad Register as latch & 0 & 41{,}600 & 0.00 \\
+F7 muxes & 0 & 16{,}300 & 0.00 \\
+F8 muxes & 0 & 8{,}150 & 0.00 \\
+Block RAM & 0 & --- & 0.00 \\
+DSP slices & 0 & --- & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All 13 registers are clock-enabled flip-flops with synchronous reset. Vivado's own report carries the note that ``the final LUT count, after physical optimizations and full implementation, is typically lower'', which is why Section~\ref{sec:qr-fpga} treats 18 LUTs as a conservative post-synthesis estimate rather than a placed-and-routed measurement.
+
+\begin{table}[htbp]
+\centering
+\caption{Design timing summary (from \texttt{timing\_summary.rpt}), clock \texttt{clk} constrained at 100~MHz.}
+\label{tab:app-timing}
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Metric} & \textbf{Value} & \textbf{Failing endpoints} \\
+\midrule
+Worst negative slack (WNS) & $+7.276$ ns & 0 of 17 \\
+Total negative slack (TNS) & 0.000 ns & --- \\
+Worst hold slack (WHS) & $+0.272$ ns & 0 of 17 \\
+Total hold slack (THS) & 0.000 ns & --- \\
+Worst pulse width slack (WPWS) & $+4.500$ ns & 0 of 13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The report concludes ``All user specified timing constraints are met.'' The estimated total on-chip power from \texttt{power.rpt} is 0.069~W (dynamic 0.000~W, device static 0.068~W) at a junction temperature of 25.3\,\textdegree C, recorded by the tool at medium confidence. This is a vector-less estimate, since no real switching-activity file was supplied.
+
+\chapter{Alert Delivery Path and Its Verification}
+\label{app:alertpath}
+
+Supporting evidence for the alert-delivery pipeline summarised in Chapter~\ref{ch:methodology}. The board runs a continuous capture-classify loop whose hysteresis logic is a tick-for-tick Python copy of \texttt{distraction\_alert\_controller.v}. It uses the same 40\% confidence threshold, the same eight-tick set and clear counters, and the same order of set and clear checks relative to counter increments, so an ``uncertain'' low-confidence tick holds both counters steady instead of resetting them, exactly like the RTL always-block does. On the rising edge of an alert, and only then, not once per classified frame, it posts the class, confidence and the JPEG-encoded triggering frame to a FastAPI backend. This backend stores the image and serves it to a Kotlin Android client, over the same bearer-token authentication used by the rest of the API.
+
+A fully organic end-to-end trigger needs a person to hold a distracted pose in front of the camera for roughly seventy seconds, at this board's inference speed. Because of that, verification was carried out in three independent layers instead.
+
+\begin{table}[htbp]
+\centering
+\caption{Three-layer verification of the alert-delivery path.}
+\label{tab:app-alertpath}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm}YY}
+\toprule
+\textbf{Layer} & \textbf{What was exercised} & \textbf{Result} \\
+\midrule
+1. Logic equivalence & The Python hysteresis port replayed against the same five scenarios as the Verilog testbench (sustained safe, sub-threshold burst, sustained distraction, an uncertain tick mid-run, sustained safe again). & 10/10 checks passed, matching the testbench's expected transitions. \\
+2. Hardware execution & Real webcam frames through the real INT8 model and the real hysteresis state machine, on the board, with no synthetic data. & Ran cleanly end to end at $\sim$9.1\,s per tick, no crash and no false alert. \\
+3. Network delivery & The production posting function imported and called directly, then the stored record retrieved from the backend and viewed in the Android client. & HTTP 200; record and image confirmed present and byte-identical. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Layer 1 shows that the deployed decision logic behaves the same as the hardware design verified in Section~\ref{sec:qr-fpga}. Layer 2 shows that the full pipeline runs on real hardware. Layer 3 shows that the network call the loop actually makes reaches its destination. What the three layers together do not add up to is one single unattended physical demonstration. That limitation is stated here directly, not hidden.
+
+\chapter{Physical Buzzer Alert Output}
+\label{app:buzzer}
+
+Supporting evidence for the buzzer paragraph in Chapter~\ref{ch:methodology}. This appendix covers why the board could not drive a buzzer at all before this work, what was built to fix that, the real problems hit along the way, and how the buzzer itself was diagnosed and driven correctly.
+
+\section{The board could not control the header pin at all}
+
+The available buzzer is a real two-pin passive unit, with no transistor or driver circuit to hand, so it had to be wired directly to a GPIO-capable header pin. Checking \texttt{/sys/class/gpio} on the board's stock PYNQ image showed only one exposed GPIO controller, \texttt{zynq\_gpio} (118 lines, 54 processor MIO pins plus 64 EMIO pins), and none of those lines reach the board's PMOD headers. The PMOD and LED-adjacent pins sit on FPGA-fabric I/O banks, not the processor's fixed MIO banks. No bitstream or overlay file exposing them existed anywhere on the board's filesystem. Nothing on this board could toggle a header pin from Python without a custom bitstream built specifically to expose it. This was worked out by direct inspection, not assumed.
+
+\section{The overlay}
+
+A minimal Vivado project was built from scratch at \texttt{fpga/vivado\_overlay\_buzzer/}, targeting \texttt{xc7z020clg484-1}, the real device on the board (distinct from the \texttt{distraction\_alert} project's Basys3 target used in Section~\ref{sec:fpga-alert-design}). The block design (Figure~\ref{fig:buzzer-bd}) consists of a Zynq7 Processing System block and a single-bit AXI GPIO block. The processing-system block does not reconfigure the processor: Linux is already running from the SD card independently of this design. It is included so Vivado generates the AXI clock, reset and address-decode plumbing that lets the already-running processor address a peripheral built in the reconfigurable fabric. The GPIO block's output was brought out to package pin V7, which the board's user guide identifies as header J62 pin 1 (\texttt{PMOD2\_0}, LVCMOS33) \citep{xilinx2019ug850}.
+
+\RequiredFigure[0.85\textwidth]{zc702_buzzer_overlay_block_design.pdf}{The buzzer overlay's Vivado block design. A Zynq7 Processing System block provides AXI/clock/reset plumbing to the already-running processor. A single-bit AXI GPIO block is the only new circuit, exposed externally as \texttt{buzzer\_o} on package pin V7.}{fig:buzzer-bd}
+
+Three real build errors were hit and worked through by reading Vivado's own output rather than guessed in advance. A manual clock-connection automation call errored because the AXI4 connection automation had already wired the clock. The redundant call was removed. \texttt{make\_bd\_pins\_external} does not accept a \texttt{-name} option in this Vivado version, confirmed against its own \texttt{-help} text, so the external port was renamed after creation instead. The generated wrapper Verilog file was assumed to land under a \texttt{.gen} build-products directory and was in fact under \texttt{.srcs}, so the add-files step had to be corrected. Synthesis, implementation and bitstream generation then finished with zero errors. \texttt{write\_hwdef} produced a \texttt{.hwdef} file that turned out to already be a ZIP archive containing a valid \texttt{.hwh} hardware-handoff file. This is the metadata PYNQ needs to know the GPIO block's address on the AXI bus, alongside the bitstream itself, which configures the fabric electrically but carries no address information of its own. No separate \texttt{.hdf}-to-\texttt{.hwh} conversion step was needed for this Vivado version.
+
+\section{Root permission and two unrelated Jupyter defects}
+
+Loading the overlay (\texttt{pynq.Overlay(...)}) initially failed with \texttt{RuntimeError: Root permission needed by the library}. This was traced to a hardcoded check in \texttt{pynq/xlnk.py} (\texttt{if os.getuid() != 0: raise RuntimeError(...)}), not a file-permission problem. Giving the \texttt{xilinx} user read and write access to \texttt{/dev/xlnk} through \texttt{udev} rules was tried first, and testing confirmed it did not fix it. The fix that actually worked was changing the \texttt{jupyter.service} systemd unit from \texttt{User=xilinx} to \texttt{User=root} and restarting the service. This is the standard PYNQ convention on Xilinx's own reference image. This particular community board image had simply been set up differently. A live kernel process owned by \texttt{root} after the change confirmed the fix worked. Two unrelated defects in the same service were found and fixed while debugging this. \texttt{HOME} was wrongly set to \texttt{/root} for every kernel the service spawned, which broke the \texttt{tflite\_runtime} import used throughout the on-device work (Section~\ref{sec:arm32-issue}), since it lives under \texttt{/home/xilinx}. The configured notebook directory had also drifted away from where the board's own notebooks actually live, hiding them from the browser's file tree. Both were fixed in the service's own startup script.
+
+\section{Driving a passive buzzer}
+
+Holding the GPIO pin at a steady logic level produced a single click on each transition, not a tone. This is the expected behaviour of a ``passive'' buzzer, which has no built-in oscillator and only responds to a changing voltage, unlike an active buzzer that would tone continuously under steady DC. The fix was to generate an actual square wave in software. This used a tight busy-wait loop polling the clock rather than \texttt{time.sleep()}, which produced a noticeably less jittery tone, at the cost of pinning a CPU core for the whole alert. A frequency sweep from 300~Hz to 4{,}000~Hz was used to pick 2{,}500~Hz by ear as the clearest and loudest. Some residual timing instability is inherent to generating a waveform in software on a non-real-time operating system, and this was accepted rather than chased further, since it does not affect whether the alert is actually audible.
+
+\section{Integration}
+
+\texttt{alert\_loop\_infer.py} lazily loads the overlay once per process and caches the GPIO pin handle, since loading an overlay is too slow to repeat on every alert. The buzzer is sounded on the same rising edge as the backend post, inside the same alert-handling branch, so the two channels never diverge. The fix was confirmed working through the real Jupyter server rather than a directly spawned kernel, since the server's own process, not a manually launched one, is what carries the corrected root permission.
+
+\chapter{Repository and Notebook Map}
+\label{app:repo}
+
+The full source code, notebooks, RTL and supporting documentation are submitted separately as a plain-text artefact file, as required by the FPR submission rules. This appendix maps that artefact to the project's internal structure.
+
+\begin{table}[htbp]
+\centering
+\caption{Notebook map: AI pipeline.}
+\label{tab:app-notebook-map}
+\small
+\begin{tabularx}{\textwidth}{lY}
+\toprule
+\textbf{File} & \textbf{Purpose} \\
+\midrule
+\texttt{notebooks/01--05} & Dataset exploration, subject-wise split, baseline CNN, transfer-learning models, evaluation (Section~\ref{sec:qr-baseline}). \\
+\texttt{notebooks/06} & Lighting-domain robustness: day-only baseline, frozen-backbone and fine-tuned training on real night data (Section~\ref{sec:qr-lowlight}). \\
+\texttt{notebooks/07} & Multi-view dataset review (no training). \\
+\texttt{notebooks/08} & Unified multi-view dataset builder; adapters for State Farm, SAM-DD and the Low-Light dataset. \\
+\texttt{notebooks/09} & Cross-view MobileNetV2 training, both phases (Section~\ref{sec:qr-crossview}). \\
+\texttt{notebooks/10} & Synthetic front-view augmentation plan (planning only; no synthetic images were generated or used anywhere in this project). \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{FPGA, embedded deployment and alert-delivery map.}
+\label{tab:app-fpga-map}
+\small
+\begin{tabularx}{\textwidth}{lY}
+\toprule
+\textbf{File} & \textbf{Purpose} \\
+\midrule
+\texttt{fpga/rtl/*.v} & Alert controller, UART receiver and top-level Verilog RTL (Sections~\ref{sec:fpga-alert-design}, \ref{sec:qr-fpga}). \\
+\texttt{fpga/sim/*\_tb.v} & Self-checking testbench and real-model-data testbench. \\
+\texttt{fpga/scripts/\allowbreak run\_synth.tcl} & Out-of-context Vivado synthesis script producing the reports in Appendix~\ref{app:fpga}. \\
+\texttt{fpga/\allowbreak notebooks/01--04} & Runnable notebooks reproducing RTL simulation, synthesis, TFLite conversion and live board checks. \\
+\texttt{fpga/vivado\_overlay\_buzzer/} & Vivado project building the PYNQ-loadable overlay that exposes the buzzer GPIO pin (Appendix~\ref{app:buzzer}). \\
+\texttt{fpga/board\_scripts/} & On-device inference scripts: single-shot webcam, HDMI capture, and the continuous alert loop with hysteresis and buzzer output. \\
+\texttt{fpga/board\_notebooks/} & Board-hosted demonstration notebooks (live camera, HDMI capture, video file). \\
+\texttt{mobile\_app/backend/} & FastAPI alert backend receiving alert events and images from the board. \\
+\texttt{mobile\_app/\allowbreak DistractionAlertApp/} & Kotlin Android client displaying alert history and captured frames. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Supporting Documentation}
+\label{app:docs}
+
+The following documents were kept up throughout the project alongside the code and give detail beyond what is reported in the main body. They are supplied with the code artefact.
+
+\begin{itemize}[leftmargin=1.6em]
+	\item \texttt{docs/PROJECT\_STATUS.md} - current-state summary maintained across the whole project.
+	\item \texttt{docs/multiview\_stage\_progress\_log.md} - chronological log of the multi-view and dataset stages.
+	\item \texttt{fpga/zc702\_board\_bringup\_log.md} - detailed log of the ZC702 bring-up, including the full ARM32 runtime diagnosis (Section~\ref{sec:arm32-issue}), the preprocessing-mismatch investigation (Section~\ref{sec:qr-runtime-correctness}), and the WiFi hypothesis test described in Section~\ref{sec:eval-challenges}.
+	\item \texttt{docs/unified\_multiview\_dataset\_format\_plan.md} - the unified metadata schema definition (Section~\ref{sec:method-splits}).
+	\item \texttt{docs/multiview\_driver\_distraction\_dataset\_review.md} - the candidate dataset review that informed the choice of SAM-DD.
+	\item \texttt{docs/survey/} - the systematic survey underpinning Chapter~\ref{ch:litreview}, including its full reference list and PRISMA figures.
+	\item \texttt{fpga/README.md} - scope statement for the FPGA alert-controller work, stating explicitly what is verified and what is not claimed.
+\end{itemize}
