@@ -53,6 +53,7 @@ real_test_images/
 *.zip
 *.rar
 *.7z
+!report/latex_source.zip
 *.tar
 *.gz
 
