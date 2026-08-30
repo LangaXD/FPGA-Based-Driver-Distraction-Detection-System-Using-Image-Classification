@@ -1,0 +1,60 @@
+%!TEX root = main.tex
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Problem overview}
+
+Distracted driving is a major road-safety problem. Activities such as using a phone, eating, drinking, adjusting vehicle controls or talking to a passenger can take a driver's attention away from the road. Camera-based classification offers a practical way to recognise these behaviours and generate an alert when sustained distraction is detected.
+
+The difficulty is that many published systems are developed and evaluated under controlled conditions, usually with one camera position and one lighting condition. Strong accuracy under those conditions does not guarantee comparable performance from another viewpoint or at night. A usable in-car system must also run on suitable hardware and turn individual frame predictions into stable alerts. This project examines these modelling and deployment problems as parts of the same system.
+
+\section{Current issues and the gap this project addresses}
+
+Three gaps motivate this project. Chapter~\ref{ch:litreview} assesses each gap against the existing literature.
+
+First, camera-view robustness is rarely tested directly. In data where multi-view options exist, much previous research either uses a single view or measures performance inside a viewpoint rather than across viewpoints. The existence of left and right distraction classes further complicates this problem because a frontal camera provides a mirrored view in relation to the side camera view and thus "texting left" performed with the former will look like "texting right" when captured with the latter. Pooling across views without addressing this discrepancy runs the risk of quietly skewing labels.
+
+Second, while lighting robustness is a widely recognized problem, its evaluation is rarely conducted with actual data. Where low-lighting scenarios are included in evaluations, researchers frequently use artificially dimmed daytime images or infrared-like coloring, which is a perfectly acceptable proxy for robustness but is no replacement for real low-light images. Real low-light data captures effects that cannot be created synthetically, such as color attenuation, the impact of near infrared illumination on skin and fabric reflections and camera noise. This project initially considered doing a synthetic experiment of this sort but abandoned it in favor of real low-light data once it became available.
+
+Third, the progression from a trained model to a functioning alert system is generally seen as a promising future development rather than something to be actually implemented. Frames per second measurements are usually obtained using development workstation scale benchmarks rather than on realistic hardware configurations. Quantization effects on accuracy and model size are rarely considered and the process used to transform frame-wise predictions into an alert is even more rarely explained and validated empirically.
+
+\section{Project details}
+
+The project is built in two connected phases that match these gaps.
+
+\textbf{Phase 1 - AI robustness.} A single-view baseline is set up first. Custom CNN, MobileNetV2 and EfficientNet-B0 are trained on the State Farm Distracted Driver Detection dataset (10 classes, 22{,}424 images) using a subject-wise split. These three models are then tested and compared in terms of accuracy, macro F1, per class recall and throughput. Next, two robustness tests are run on real data. First, camera-view robustness test consists of combining State Farm (side view) and SAM-DD dataset, which contains images in pairs from front- and side-views. Second, lighting robustness is tested by combining State Farm and nighttime subset of the Low-Light Driver Distraction Dataset \citep{saad2020lowlight}, recorded in active infrared light. This test evaluates the drop in accuracy of day-only model before any intervention is taken.
+
+\textbf{Phase 2 - hardware.} The fine-tuned model is converted into quantized INT8 TensorFlow Lite format and deployed on the Xilinx ZC702 board (Zynq-7000) for the reason that this board contains a general-purpose CPU ARM Cortex-A9 core that can perform a full CNN, unlike an FPGA board without a core on board. Real latency and accuracy is measured instead of being estimated. Decision stage with hysteresis logic in order to prevent flickering alerts is implemented in Verilog, verified through simulation by comparing the decision stage predictions to the predictions made by the trained model. Finally, the alert pathway from the board to a backend and Android client is set up.
+
+\section{Aims and objectives}
+
+\begin{enumerate}[itemsep=0.15em]
+	\item To prepare and use suitable driver-distraction image data, including real multi-view and real low-light data, for training and testing a camera-view-robust and lighting-robust classification system.
+	\item To build and test a prototype running on real, low-cost embedded hardware, with an alert output that reacts to sustained distraction rather than a single momentary prediction and to measure the accuracy, size and latency cost of getting there.
+\end{enumerate}
+
+\section{Research questions}
+\label{sec:research-questions}
+
+\begin{enumerate}[itemsep=0.15em]
+	\item[\textbf{RQ1}] How do a custom CNN, MobileNetV2 and EfficientNet-B0 compare when the test drivers are not present in the training data?
+	\item[\textbf{RQ2}] How much does accuracy change when a model is tested on a different, unseen camera view and does fine-tuning on multi-view data close that gap?
+	\item[\textbf{RQ3}] How much accuracy does a day-trained model lose on real infrared-illuminated footage and how much can be recovered by training on real night data rather than synthetic approximations?
+	\item[\textbf{RQ4}] What does INT8 quantisation and embedded deployment cost in accuracy, model size and latency before and after conversion and how do laptop figures differ from real on-device performance?
+	\item[\textbf{RQ5}] Which part of a complete pipeline, the classifier or the decision logic after it, can actually be built and checked in FPGA hardware in the time available?
+\end{enumerate}
+
+Every experiment in Chapter~\ref{ch:results} is tied to one of these questions. Section~\ref{sec:qr-rq-summary} gives the answer each one produced.
+
+\section{Feasibility, commercial context and risk}
+
+The scope has been defined to include aspects which could be physically implemented and measured, as opposed to purely simulated. A fully functional CNN accelerator based on an FPGA was seen to be too challenging for the timeline and was thus discarded. The ZC702’s Cortex-A9 core runs the classifier and the fabric is used for the decision making stage. This solution was known in advance to be a fall-back plan from the very start from the Interim Progress Report.
+
+The business case of the project is based on cost, rather than novelty. As driver monitoring becomes mandatory for new cars of certain categories in several countries, current systems are developed by the manufacturers. However, in the retrofit and fleet sector, which is the target market, older cars, taxis, delivery vans, driving schools, et cetera are equipped with hardware of much more modest budget. That is why the project aims at using components costing in tens of pounds, as opposed to thousands. Among other risks are the possibility of drivers not taking kindly to surveillance, legal issues arising due to false alerts and the obvious gap between an experimental proof of concept and a commercially viable product, which is covered in more detail in Chapter~\ref{ch:evaluation}.
+
+The key technical problem that emerged during the project was an incompatibility at the low level of the single existing TensorFlow Lite runtime for this board and the actual instruction set (Section~\ref{sec:arm32-issue}). Fixing this problem instead of giving up on local inference was one of the main technical contributions of the project.
+
+\section{Report structure}
+
+Chapter~\ref{ch:litreview} reviews prior work related to distraction detection, cross view and lighting robustness and embedded/FPGA-based deployment. Chapter~\ref{ch:methodology} covers data preparation, model training, quantisation, FPGA implementation, buzzer-overlay implementation and testing strategy. Chapter~\ref{ch:results} contains the results with critical analysis, including a software/hardware performance comparison. Chapter~\ref{ch:evaluation} evaluates the project according to its goals, literature review, project management, limitations and future work.

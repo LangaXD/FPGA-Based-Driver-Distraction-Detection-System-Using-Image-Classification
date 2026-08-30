@@ -1,0 +1,348 @@
+%!TEX root = main.tex
+
+\chapter{Quality and Results}
+\label{ch:results}
+
+All results reported in this chapter come from the fixed groups of held-out subjects listed in Table~\ref{tab:split-integrity}. Full per-class precision, recall and F1 tables for all six trained models are provided in Appendix~\ref{app:classreports}.
+
+\section{Single-view baseline: model comparison (RQ1)}
+\label{sec:qr-baseline}
+
+Table~\ref{tab:model-comparison} compares the three models using the State Farm subject-wise test set. MobileNetV2 achieved the highest test accuracy and macro F1, at 84.67\% and 84.01\%, respectively. EfficientNet-B0 reached 82.47\% accuracy and 81.58\% macro F1, while the custom CNN reached 75.60\% and 75.27\%. EfficientNet-B0 also showed a sizeable validation-to-test difference, at 72.23\% versus 82.47\%, suggesting that its four-driver validation partition was more difficult than its test partition. Because each partition contains only a small number of drivers, these results should be interpreted cautiously, as discussed in Section~\ref{sec:eval-limitations}.
+
+\begin{table}[htbp]
+\centering
+\caption{Single-view model comparison on the State Farm subject-wise test set (3{,}086 images, 4 held-out drivers).}
+\label{tab:model-comparison}
+\small
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Model} & \textbf{Val. acc.} & \textbf{Test acc.} & \textbf{Macro F1} & \textbf{Weighted F1} & \textbf{Train time (min)} \\
+\midrule
+Baseline CNN & 60.89\% & 75.60\% & 75.27\% & 76.57\% & 11.87 \\
+MobileNetV2 & 82.12\% & \textbf{84.67\%} & \textbf{84.01\%} & \textbf{84.94\%} & 32.03 \\
+EfficientNet-B0 & 72.23\% & 82.47\% & 81.58\% & 82.79\% & 37.57 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\ReadableFigure[0.90\textwidth]
+{model_comparison_test_accuracy.png}
+{Test accuracy of the custom CNN, MobileNetV2 and EfficientNet-B0 on the State Farm subject-wise test set.}
+{fig:model-comparison-accuracy}
+
+\ReadableFigure[0.90\textwidth]
+{model_comparison_f1_scores.png}
+{Macro and weighted F1 scores of the three single-view baseline models.}
+{fig:model-comparison-f1}
+
+The deployment measurements in Table~\ref{tab:deployment} and Figure~\ref{fig:acc-vs-fps} were collected on the development laptop, not on embedded hardware. The corresponding on-device comparison is provided in Section~\ref{sec:qr-consolidated}. MobileNetV2 was slightly slower than the custom CNN, at 16.64 FPS compared with 17.61 FPS, but improved accuracy by approximately nine percentage points. This accuracy gain justified its selection despite the modest throughput difference.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Deployment-oriented measurements on the development laptop (GPU-accelerated). These are laptop figures and are not comparable with the on-device figures in Table~\ref{tab:consolidated}.}
+\label{tab:deployment}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Model} & \textbf{Size (MB)} & \textbf{Inference (ms)} & \textbf{Throughput (FPS)} \\
+\midrule
+Baseline CNN & 4.96 & 56.79 & 17.61 \\
+MobileNetV2 & 20.78 & 60.08 & 16.64 \\
+EfficientNet-B0 & 15.75 & 64.51 & 15.50 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\ReadableFigure[0.88\textwidth]
+{accuracy_vs_fps_all_models.png}
+{Accuracy against laptop throughput for the three baseline models, showing the trade-off underlying the MobileNetV2 selection.}
+{fig:acc-vs-fps}
+
+\FloatBarrier
+
+\section{Cross-view generalisation (RQ2)}
+\label{sec:qr-crossview}
+
+MobileNetV2 was retrained on the combined State Farm and SAM-DD table (80,211 training images spanning side and front) with the backbone frozen. Mixed-view accuracy reached only 75.94\% and it was clearly uneven, 78.79\% on front against 73.93\% on side. A model not specifically trained for the view robustness is not automatically robust to the changes of the view, even if this view is present in the training data and is managed equally well by default.
+
+Unfreezing the last 30 layers and fine-tuning at $1\times10^{-5}$ improved every measure in Table~\ref{tab:crossview}. Early stopping retained epoch 5, where validation accuracy reached its maximum of 91.24\%. Training accuracy had already exceeded 98\% by epoch 3 of fine-tuning, while the later validation results did not improve, indicating overfitting (Figures~\ref{fig:crossview-accuracy-curve} and~\ref{fig:crossview-loss-curve}).
+
+\begin{table}[htbp]
+\centering
+\caption{Cross-view MobileNetV2 accuracy, frozen-backbone against fine-tuned, on the 17{,}992-image held-out mixed-view test set.}
+\label{tab:crossview}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Test partition} & \textbf{Frozen-backbone} & \textbf{Fine-tuned} & \textbf{Change} \\
+\midrule
+Mixed-view (17{,}992 images) & 75.94\% & \textbf{91.76\%} & $+15.8$ pt \\
+\texttt{side} view (10{,}539 images) & 73.93\% & \textbf{91.05\%} & $+17.1$ pt \\
+\texttt{front} view (7{,}453 images) & 78.79\% & \textbf{92.77\%} & $+14.0$ pt \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\ReadableFigure[0.92\textwidth]
+{crossview_training_accuracy.png}
+{Cross-view MobileNetV2 training and validation accuracy across the frozen-backbone and fine-tuning phases.}
+{fig:crossview-accuracy-curve}
+
+\ReadableFigure[0.92\textwidth]
+{crossview_training_loss.png}
+{Cross-view MobileNetV2 training and validation loss across the frozen-backbone and fine-tuning phases.}
+{fig:crossview-loss-curve}
+
+\ReadableFigure[0.72\textwidth]
+{crossview_confusion_frozen.png}
+{Row-normalised confusion matrix for the frozen-backbone cross-view model on the held-out mixed-view test set.}
+{fig:crossview-confusion-frozen}
+
+\ReadableFigure[0.72\textwidth]
+{crossview_confusion_finetuned.png}
+{Row-normalised confusion matrix for the fine-tuned cross-view model on the held-out mixed-view test set.}
+{fig:crossview-confusion-finetuned}
+
+\FloatBarrier
+
+All ten classes improved, but unevenly and this unevenness is actually the more useful result (Section~\ref{sec:qr-class-errors}). Figure~\ref{fig:crossview-qualitative} shows predictions on real held-out images from both views.
+
+\ReadableFigure[0.98\textwidth]
+{mobilenetv2_crossview_qualitative_samples.png}
+{Qualitative predictions from the fine-tuned cross-view model on held-out test images spanning both camera views.}
+{fig:crossview-qualitative}
+
+\FloatBarrier
+
+\section{Lighting-domain robustness (RQ3)}
+\label{sec:qr-lowlight}
+
+This stage tests the performance of the model trained during the day on night-time video data recorded in active IR light, instead of the day video darkened artificially. The results of this stage are the most extreme throughout the whole project.
+
+\subsection{The day-only baseline collapses}
+
+The best single-view State Farm MobileNetV2 checkpoint, the same model that got 84.67\% on its own daytime test set, was directly tested  on the 1,500 held-out real night images without any retraining. Its night accuracy is 19.53%.
+
+This number misrepresents the extent of the problem. Instead of showing degradation of performance on ten classes, the model collapsed. It assigns nearly all night images to two classes, with 99.3\% recall on texting\_left and 96.0\% recall on reaching\_behind and 0.0\% recall on all other eight classes (Appendix~\ref{app:classreports}). Thus, the model did not just become confused, it stopped discriminating between classes, which may be considered even more harmful for an alerting stage downstream that receives confident misclassifications rather than just noisy data.
+
+
+\subsection{Training on real night data recovers most of the gap}
+
+A fresh MobileNetV2 was trained on the joined table of 20,399 training images (State Farm daytime images, plus only real night subset) for the reasons outlined in Section~\ref{sec:method-lowlight-data}. The training process matched the cross-view stage to make comparison easy.
+
+\begin{table}[htbp]
+\centering
+\caption{Lighting-domain robustness. The baseline column is the day-trained model applied to night images with no retraining. All test figures come from held-out drivers.}
+\label{tab:lowlight}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Test partition} & \textbf{Day-only baseline} & \textbf{Frozen-backbone} & \textbf{Fine-tuned} \\
+\midrule
+Mixed day+night (4{,}586 images) & - & 62.30\% & \textbf{77.91\%} \\
+\texttt{day} (3{,}086 images) & 84.67\% & 64.55\% & \textbf{81.21\%} \\
+\texttt{night} (1{,}500 images) & 19.53\% & 57.67\% & \textbf{71.13\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+First, training a new classification head on real day and night images with backbone pre-trained on ImageNet improved the night accuracy from 19.53\% to 57.67\%. Thus, the collapse seems to be mostly caused by the classification head rather than a deficiency of ImageNet features for infrared illuminated images.
+
+Second, fine-tuning of the whole model helped to recover most of the lost performance, giving the model night accuracy of 71.13\%. The improvement of 51.6 percentage points was obtained on real captured video frames rather than synthetically produced approximations.
+
+Third, there is a limit to how much can be gained in this way. The daytime accuracy of fine-tuned model reached only 81.21\%, 3.5 percentage points below the 84.67\% obtained by original single-domain model on the same test set. This means that training one shared classification head for two lighting domains comes at a cost of single-domain accuracy.
+
+\ReadableFigure[0.92\textwidth]
+{lowlight_training_accuracy.png}
+{Low-light MobileNetV2 training and validation accuracy across the frozen-backbone and fine-tuning phases.}
+{fig:lowlight-accuracy-curve}
+
+\ReadableFigure[0.92\textwidth]
+{lowlight_training_loss.png}
+{Low-light MobileNetV2 training and validation loss across the frozen-backbone and fine-tuning phases.}
+{fig:lowlight-loss-curve}
+
+\ReadableFigure[0.72\textwidth]
+{lowlight_confusion_day_only.png}
+{Row-normalised confusion matrix for the day-trained MobileNetV2 evaluated directly on the 1,500 held-out real night images. The predictions collapse mainly into two classes.}
+{fig:lowlight-confusion-day-only}
+
+\ReadableFigure[0.72\textwidth]
+{lowlight_confusion_frozen.png}
+{Row-normalised confusion matrix for the frozen-backbone low-light model on the held-out mixed day-and-night test set.}
+{fig:lowlight-confusion-frozen}
+
+\ReadableFigure[0.72\textwidth]
+{lowlight_confusion_finetuned.png}
+{Row-normalised confusion matrix for the fine-tuned low-light model on the held-out mixed day-and-night test set.}
+{fig:lowlight-confusion-finetuned}
+
+\FloatBarrier
+
+\ReadableFigure[0.86\textwidth]
+{mobilenetv2_lowlight_qualitative_samples.png}
+{Qualitative predictions from the fine-tuned low-light model on held-out real night-time images.}
+{fig:lowlight-qualitative}
+
+\FloatBarrier
+
+\section{Quantisation: accuracy, size and latency (RQ4)}
+\label{sec:qr-quantisation}
+
+Quantisation is what makes embedded deployment possible at all. Its cost is reported here across all four measures (accuracy, size, latency and throughput) before and after conversion.
+
+\subsection{Model size}
+
+The fine-tuned cross-view Keras model takes 21,791,872 bytes (20.78 MB) in size, while the INT8 TensorFlow Lite conversion yields 2,723,448 bytes (2.60 MB), which gives the compression ratio of \textbf{8.00$\times$}. This corresponds to the expected result of INT8 quantisation applied to mostly float32 model and demonstrates that the conversion happened as it should and did not preserve the floating point weights in disguise.
+
+\subsection{Accuracy}
+
+Two before-and-after comparisons were measured on different samples and both are reported here because the difference between them is informative on its own (Table~\ref{tab:quantisation-accuracy}).
+
+\begin{table}[htbp]
+\centering
+\caption{Quantisation accuracy cost, measured on different held-out samples. The two loss figures differ because INT8 quantisation error is data-dependent, not because either measurement is unreliable.}
+\label{tab:quantisation-accuracy}
+\small
+\begin{tabular}{llccc}
+\toprule
+\textbf{Model} & \textbf{Evaluation sample} & \textbf{Keras float32} & \textbf{TFLite INT8} & \textbf{Cost} \\
+\midrule
+Cross-view, frozen & 500 mixed-view images & 76.80\% & 76.00\% & $-0.8$ pt \\
+Cross-view, frozen & 300 random \texttt{side} images & 59.30\% & 54.70\% & $-4.6$ pt \\
+Cross-view, fine-tuned & 300 random \texttt{side} images & 80.00\% & 77.30\% & $-2.7$ pt \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The first comparison used a 500-image mixed-view sample and found an accuracy reduction of 0.8 percentage points. The second used an unbalanced random sample of 300 side-view images and found a 4.6-point reduction for the same frozen model. These figures are not directly comparable because the samples differ in size and composition. The float32 model itself achieved only 59.3\% on the 300-image sample, well below its 73.93\% result across the complete side-view test partition, showing that this was a more difficult sample.
+
+The deployed fine-tuned model lost 2.7 percentage points on the same 300-image sample, compared with 4.6 points for the frozen model. One possible explanation is that the better-trained model produced larger prediction margins and was therefore less sensitive to quantisation noise, although this was not tested directly. All measured reductions remain within the few-percentage-point range discussed by \citet{abushahla2025quantization}.
+
+\subsection{The consolidated software-to-hardware comparison}
+\label{sec:qr-consolidated}
+
+Table \ref{tab:consolidated} brings together the entire processing pipeline into one comparison: the laptop float32 reference, the laptop-based INT8 conversion and the same model run on actual ZC702 hardware, each with its respective FPGA fabric usage shown alongside. The goal of the table is to clearly distinguish between laptop and hardware performance.
+
+\begin{table}[H]
+\centering
+\caption{Consolidated software, deployment and hardware comparison for the fine-tuned cross-view MobileNetV2 and the FPGA alert controller. Laptop and on-device figures are reported separately and are not interchangeable.}
+\label{tab:consolidated}
+\footnotesize
+\begin{tabular}{llccc}
+\toprule
+\textbf{Stage} & \textbf{Platform} & \textbf{Model size} & \textbf{Accuracy} & \textbf{Latency / throughput} \\
+\midrule
+Reference (float32) & Laptop (RTX 3060) & 20.78 MB & 80.0\% & 60.08 ms / 16.64 FPS \\
+Quantised (INT8) & Laptop (converted) & 2.60 MB & 77.3\%\textsuperscript{c} & not separately timed \\
+Deployed (INT8) & ZC702 (Cortex-A9) & 2.60 MB & \textbf{77.3\%} & \textbf{9{,}150 ms / 0.11 FPS} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Quantisation results in eight times smaller model size with an accuracy cost of 2.7 percentage points. Migration from laptop to target involves no accuracy loss, because the INT8 model behaves identically on both platforms, but brings a speed penalty of around 150 times. The fabric alert-decision stage remains free of cost almost completely, with the entire pipeline cost being in the CNN. This is what justifies the engineering goal of developing a dedicated CNN accelerator (Section \ref{sec:eval-future}).
+
+\section{On-device deployment on the ZC702 (RQ4)}
+\label{sec:qr-ondevice}
+
+\subsection{Establishing runtime correctness first}
+\label{sec:qr-runtime-correctness}
+
+Any accurate on-device figure had to prove numerical correctness in addition to being crash-proof, before the trustworthiness of the number could be established. An initial comparison of the board with the laptop revealed only 71\% agreement, implying an incorrect build at first glance. The source of error was in the test script, which resizes images via \texttt{PIL.Image.resize()} during training, while the on-device deploy uses \texttt{cv2.resize} function, leading to a difference. After preprocessing harmonisation, agreement became 100 out of 100 predictions, showing identity of results. This means that the rebuilt ARM32 runtime is numerically equivalent to the official implementation, a stronger statement than crash avoidance alone.
+
+\subsection{Accuracy on real hardware}
+
+A random selection of 300 images was tested in four different settings: Keras float32 and on-device TFLite INT8, both for the frozen and fine-tuned checkpoints (Figure \ref{fig:ondevice-accuracy}). Fine-tuning increased on-device accuracy from 54.7\% to 77.3\%, for a gain of 22.6 percentage points, observed on real hardware. It implies that the laboratory gains survive quantisation and deployment, not merely assumed.
+
+\RequiredFigure[0.80\textwidth]{zc702_ondevice_accuracy_comparison.png}{On-device (ZC702, TFLite INT8) against reference (Keras float32) accuracy on the same 300-image held-out sample, before and after fine-tuning.}{fig:ondevice-accuracy}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.80\textwidth]{zc702_live_inference.png}
+\caption{A real inference run on the ZC702, showing the predicted class and confidence  reported in Section~4.5.2.}
+\label{fig:live-inference}
+\end{figure}
+
+Figure~\ref{fig:live-inference} shows this measured directly on the board, not estimated from the laptop figure.
+
+Inference on the device took about 9.15 seconds per image, without XNNPACK acceleration, which represents the configuration that is known to be safe, as validated under the ARM32 crash fix, being the most explicit limitation of this deployment. Section \ref{sec:eval-challenges} covers the reasons why re-enabling XNNPACK was considered but not attempted.
+
+\section{FPGA alert-controller verification and synthesis (RQ5)}
+\label{sec:qr-fpga}
+
+All testbenches pass without issues. The standalone hysteresis testbench passes all ten checks, while the end-to-end testbench replays 28 real classifications over a simulated UART link, including two real model misclassifications, both of which are correctly ignored without a false positive alert. It matches the designed failure mode of the system, validated against real erroneous model output and not artificial noise. Out-of-context synthesis for the Artix-7 target (Table \ref{tab:fpga}, Figure \ref{fig:fpga-util}) shows that the controller uses only a tiny fraction of the device and satisfies the 100 MHz timing requirement with 7.276 ns of slack.
+
+\begin{table}[htbp]
+\centering
+\caption{Post-synthesis results for the alert controller, \texttt{xc7a35tcpg236-1}, out-of-context. Raw report excerpts are in Appendix~\ref{app:fpga}.}
+\label{tab:fpga}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Slice LUTs & 18 (0.09\% of 20{,}800) \\
+Slice registers (flip-flops) & 13 (0.03\% of 41{,}600) \\
+Block RAM & 0 \\
+DSP slices & 0 \\
+Worst negative slack at 100 MHz & $+7.276$ ns \\
+Worst hold slack & $+0.272$ ns \\
+Failing timing endpoints & 0 of 17 \\
+Implied theoretical maximum frequency & $\sim$367 MHz \\
+Estimated total on-chip power & 0.069 W (0.068 W static) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\RequiredFigure[0.78\textwidth]{fpga_synthesis_utilization.png}{Post-synthesis resource utilisation for the alert controller on \texttt{xc7a35tcpg236-1}.}{fig:fpga-util}
+
+First, it should be stressed that these are post-synthesis estimates, rather than measurement of the placed-and-routed design on the actual silicon, as access to the real Artix-7 board was not possible and this target was selected as the representative example of a low-cost device. Vivado report shows that the actual LUT count after physical optimisations is usually less; thus, the current estimate is conservative, although still an estimate. Second, the power estimate is made at the medium confidence level, without the vector simulation. Third and most importantly, the above figures are related to the decision stage only, not the CNN, as the classifier runs in software on the ARM processor and is not covered by the synthesised design. Hence, nothing in Table \ref{tab:fpga} should be seen as a cost estimate of MobileNetV2 in fabric.
+
+The work on FPGA demonstrates a narrower but still concrete achievement: the logic that transforms the stream of noisy classifications into a consistent set of alerts is low-cost and low-power, implementable on the smallest FPGA devices and verified against real model output, including actual mispredictions, with the reproducibility guaranteed by the provided scripts.
+
+\section{Class-level error analysis across all three stages}
+\label{sec:qr-class-errors}
+
+A summary of just the accuracy of the headline would hide the more revealing structure that exists in these results. Table \ref{tab:class-errors} captures the most illuminating classes.
+
+\begin{table}[htbp]
+\centering
+\caption{Selected per-class results across stages (P = precision, R = recall). Full tables in Appendix~\ref{app:classreports}.}
+\label{tab:class-errors}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{\textbf{Cross-view frozen}} & \multicolumn{2}{c}{\textbf{Cross-view fine-tuned}} & \multicolumn{2}{c}{\textbf{Low-light fine-tuned}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+\textbf{Class} & \textbf{P} & \textbf{R} & \textbf{P} & \textbf{R} & \textbf{P} & \textbf{R} \\
+\midrule
+\texttt{talking\_to\_passenger} & 0.61 & 0.14 & 0.60 & 0.52 & 0.72 & 0.82 \\
+\texttt{texting\_left} & 0.42 & 0.77 & 0.97 & 0.82 & 0.97 & 0.65 \\
+\texttt{texting\_right} & 0.69 & 0.50 & 0.92 & 0.77 & 0.99 & 0.46 \\
+\texttt{hair\_or\_makeup} & 0.70 & 0.54 & 0.87 & 0.88 & 0.60 & 0.66 \\
+\texttt{drinking} & 0.75 & 0.61 & 0.84 & 0.83 & 0.64 & 0.89 \\
+\texttt{safe\_driving} & 0.89 & 0.88 & 0.94 & 0.98 & 0.55 & 0.85 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The "hair\_or\_makeup" class remained difficult across the project. It had the lowest F1 in the single-view baseline at 0.71 and in the frozen low-light model at 0.42. Gestures near the face resemble "phone\_to\_ear", while the relevant object is often small or partly hidden, making it especially vulnerable to reduced image quality.
+
+In the cross-view experiment, recall for "talking\_to\_passenger" improved from 0.14 to 0.52 after fine-tuning. However, this class contained only 258 test images compared with 9,006 for "safe\_driving", so its recall is less stable than the headline mixed-view result suggests.
+
+The clearest fine-tuning effect appears in "texting\_left". Precision increased from 0.42 to 0.97 while recall remained broadly similar, increasing from 0.77 to 0.82. The gain therefore came mainly from reducing incorrect "texting\_left" predictions rather than simply predicting the class more often.
+
+The low-light result for "texting\_right" shows the opposite pattern, with precision of 0.99 but recall of 0.46. This is consistent with the unresolved left-right labelling ambiguity discussed in Section~\ref{sec:method-lowlight-data}, although the current evidence cannot separate label noise from a genuine model weakness.
+
+\section{Summary against the research questions}
+\label{sec:qr-rq-summary}
+
+\begin{description}[leftmargin=1.5em,style=nextline,itemsep=0.15em]
+	\item[RQ1 - Model comparison.] MobileNetV2 beats both other options in subject-wise evaluation (84.67\% accuracy, 84.01\% macro F1) while retaining the best deployment properties in size and throughput (Section~\ref{sec:qr-baseline}).
+	\item[RQ2 - Cross-view robustness.] A simple multi-view model reveals a real but uneven gap (75.94\% mixed, \texttt{side} 4.9 points behind \texttt{front}). Fine-tuning closes most of this gap, reaching 91.76\%, with evidence from class scores showing that gains come from improved class boundaries rather than a uniform shift (Section~\ref{sec:qr-crossview}, Section~\ref{sec:qr-class-errors}).
+	\item[RQ3 - Lighting robustness.] A day-trained model fails at 19.53\% on real infrared-illuminated night footage, scoring zero recall on eight out of ten classes. Night training recovers this to 71.13\%, but loses 3.5 points of daytime accuracy (Section~\ref{sec:qr-lowlight}).
+	\item[RQ4 - Quantisation and deployment cost.] INT8 quantisation reduced the model size by 8$\times$ at a cost of 2.7 accuracy points on the deployment sample. The embedded runtime reproduced the laptop INT8 predictions, but the ZC702 required approximately 9.15 seconds per image, making it around 150$\times$ slower than the laptop measurement (Section~\ref{sec:qr-quantisation}, Section~\ref{sec:qr-ondevice}).
+	\item[RQ5 - What is credibly implementable in fabric.] The decision stage, rather than the classifier, was the part that could be implemented and verified credibly within the available time. Testing used real model predictions, including misclassifications. Post-synthesis results showed 18 LUTs, 13 flip-flops and 7.276 ns of positive timing slack. These remain post-synthesis estimates rather than measurements from physical Artix-7 hardware (Section~\ref{sec:qr-fpga}).
+\end{description}

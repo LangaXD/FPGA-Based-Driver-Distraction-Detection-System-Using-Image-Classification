@@ -1,0 +1,65 @@
+%!TEX root = main.tex
+
+\chapter{Evaluation and Conclusion}
+\label{ch:evaluation}
+
+\section{Final evaluation against objectives}
+\label{sec:eval-objectives}
+
+Both objectives were met, although the implementation changed as evidence and practical constraints emerged.
+
+The first objective was to evaluate camera-view and lighting robustness using suitable real data. The multi-view experiment proceeded as planned. For lighting, the original proposal to generate infrared-like images was replaced with real infrared-illuminated night footage once it became available. This removed the main limitation of using a visual approximation and produced a direct measurement of the day-to-night domain shift.
+
+The second objective was to demonstrate a low-cost embedded detection-and-alert pipeline. The CNN was deployed on the ZC702's ARM processor, while the FPGA work focused on the decision stage rather than a complete CNN accelerator. This reduced the hardware scope, but allowed both stages to be tested with real model outputs. Quantisation and deployment were evaluated using accuracy, model size, latency and throughput, with laptop and on-device measurements reported separately. The resulting system is functional as a proof of concept, although its 0.11 FPS processing rate is not suitable for real-time use.
+
+\section{Project management}
+
+The initial timeline (May to September 2026, single-view work through July, hardware work in August and September) did not expect robustness to become two full stages rather than one small check. Both were added after the qualitative domain-shift test in Section~\ref{sec:qr-baseline}. In hindsight this was the right call, since the two robustness findings are arguably the more original contributions of the project, but it compressed the hardware phase and led directly to running the CNN on the ARM core instead of building a custom accelerator, leaving the XNNPACK question open. The lesson is that a robustness finding worth investigating properly needs its own budgeted time, not a compression of an existing schedule. A second lesson is about ordering: the lighting stage, the last major piece of work, was finished last and left no room for anything to go wrong. It didn't, but that margin was never actually planned for (Figure~\ref{fig:project-gantt}).
+
+\RequiredFigure[0.95\textwidth]{project_gantt_chart.png}{Detailed project schedule, with the literature survey and report writing shown as parallel tracks.}{fig:project-gantt}
+
+\section{Insights gained}
+\label{sec:eval-insights}
+
+The first technical lesson was that failure on embedded hardware does not necessarily invalidate the method. The initial "Illegal instruction" crash appeared to make local inference impossible, but further investigation identified a VFPv3 and VFPv4 instruction-set mismatch. Rebuilding the runtime for the board's actual processor resolved the problem.
+
+The second lesson was that robustness should be measured before attempting to improve it. The frozen-backbone experiments exposed substantial and uneven camera-view and lighting gaps that would have been hidden if only the fine-tuned results had been reported.
+
+Finally, several apparent modelling or hardware failures were caused by the data pipeline. The preprocessing mismatch and the night-driver split error could both have produced believable but incorrect results. This showed the importance of checking intermediate data and predictions rather than relying only on final accuracy.
+
+\section{Reflection on challenges}
+\label{sec:eval-challenges}
+
+Two unresolved challenges remain. First, the WiFi adapter intended to provide independent connectivity could not be made to work. A USB power limitation was tested by removing competing devices and freeing approximately 1~A, but the same register-access timeouts remained. This ruled against the original power explanation and pointed instead to a driver or chipset incompatibility. The issue was deprioritised because local inference itself did not require a network connection.
+
+Second, inference remained slow without XNNPACK acceleration. Re-enabling the accelerated path might improve performance, but it could also reintroduce processor-instruction problems. Testing it required a lengthy rebuild and risked damaging the stable environment needed for the demonstration. Retaining the verified but slower configuration was therefore a deliberate risk-management decision. The resulting 9.15-second latency is reported openly and remains the main technical limitation.
+
+\section{Comparison to the literature}
+
+Chapter~\ref{ch:litreview} noted that the cross-view literature mostly reports post-fix accuracy with no equivalent unfixed baseline. This project's frozen-to-fine-tuned result (75.94\% to 91.76\%) points the same way as \citet{bhalla2025crossview} and \citet{sengar2023poseviNet}, even though both use more advanced methods. What this project adds is the size of the untreated gap on a standard architecture, not reported in either study and needed to judge how much of a published improvement comes from the method rather than just from having multi-view data at all.
+
+On lighting, the 19.53\% collapse is more extreme than the gradual drop \citet{wang2023driver} report across different recording conditions and gives a real measured reference point for the concern behind \citet{shen2023visible}'s image-translation work. Their synthetic approach is justified by how severe this problem is and the fact that real night data recovers 51.6 points suggests real data is still the stronger fix where it can be obtained. On hardware, \citet{lu2025hardware}'s 13.05~FPS for a dedicated accelerator on the same XC7Z020 chip puts this project's 0.11~FPS in perspective - a gap of roughly two orders of magnitude, the direct cost of the decision not to build one. This project's hardware contribution was never going to be a faster result; it is a numerically verified one instead.
+
+\section{Limitations}
+\label{sec:eval-limitations}
+
+Test partitions are small in terms of subjects. Four held-out State Farm drivers and two low-light night drivers are still a small group, however many images they produce, since images from the same driver are not independent samples of anything.
+
+Label quality in two datasets is not perfect and this is documented rather than hidden. SAM-DD's class mapping was rebuilt by visually checking images, with a confidence level recorded per row and four low-light classes still carry an unresolved hand-side problem. No demographic information exists in any dataset used here, so no fairness claim can be made either way and SAM-DD is recorded on a simulator, not in a moving vehicle. The FPGA results are post-synthesis estimates covering the alert stage only. Two further datasets, AUC V2 and 100-Driver, were requested but not granted within the project timeline.
+
+\section{Commercial context and future work}
+\label{sec:eval-future}
+
+The commercial case from Chapter~\ref{ch:introduction} still holds, with one big qualification. Component costs stay realistic for a retrofit or fleet product: the alert logic takes up under 0.1\% of a low-cost FPGA, the quantised model is 2.6~MB and the classifier runs on ordinary ARM hardware. But 0.11~FPS is not a workable product figure - at roughly nine seconds per inference and eight ticks needed before an alert fires, this setup would take over a minute to respond to sustained distraction and that has to close before any commercial claim is believable. The non-technical risks are, if anything, bigger: driver monitoring reads as surveillance to a lot of people and false alerts create liability risk while training users to ignore the system.
+
+Four directions follow from this. First, inference speed: turning the runtime's accelerated code path back on is a clear next step and beyond that, Table~\ref{tab:consolidated} makes the case for a dedicated CNN accelerator, since the pipeline's whole cost sits in the classifier. Second, stronger cross-domain methods, using the contrastive viewpoint-invariant approach from \citet{bhalla2025crossview} on the unified dataset built here, with the same idea applying to the lighting domain too. Third, broadening the data: the AUC~V2 and 100-Driver requests would add two more independent camera sources and the 45,600 daytime infrared images left out of the lighting experiment would allow a three-way comparison - day-RGB, day-infrared and night-infrared - separating the lighting gap from the sensor-modality gap. Fourth, repeated-seed runs, to supply the variance data this report has to report as missing.
+
+\section{Conclusion}
+
+This project examined three connected claims that performance under one camera view does not guarantee equivalent performance under another, that lighting creates an additional and potentially larger domain shift and that a detection-and-alert pipeline can be demonstrated on low-cost embedded hardware. The findings support these claims within the datasets, samples and hardware configurations evaluated in this project.
+
+MobileNetV2 achieved 84.67\% accuracy under subject-wise evaluation on the State Farm side-view dataset. In the cross-view experiment, the frozen-backbone model reached 75.94\%, with uneven performance between front and side views, while fine-tuning on real multi-view data increased accuracy to 91.76\%. The same daytime model achieved only 19.53\% on real infrared-illuminated night footage. Training with real night data recovered performance to 71.13\%, although daytime accuracy fell by 3.5 percentage points.
+
+INT8 quantisation reduced the model from 20.78 MB to 2.60 MB at a cost of 2.7 accuracy points on the deployment sample. The model was successfully run on the ZC702 and reproduced the reference INT8 predictions, but its approximately 9.15-second inference time was around 150$\times$ slower than the laptop figure. The alert-decision stage was separately verified using real model outputs and required only 18 LUTs and 13 flip-flops in post-synthesis results.
+
+Taken together, the results support a simple methodological lesson: robustness should be measured before it is improved, using real data where possible and the actual deployment platform when hardware performance is claimed. These choices produced less favourable numbers than controlled or estimated alternatives, but they also produced more defensible conclusions. For a system intended to operate inside a moving vehicle, that distinction matters.

@@ -1,0 +1,116 @@
+%!TEX root = main.tex
+
+\chapter{Methodology}
+\label{ch:methodology}
+
+\section{Project management approach}
+
+The work proceeded in two phases (Chapter~\ref{ch:introduction}). The first one dealt with AI and robustness, covering classification, subject-wise validation and the two robustness axes. The second one was concerned with hardware, covering quantisation and deployment to embedded devices and FPGAs. Progress tracking and documentation were done on a notebook-by-notebook basis in a version-controlled repository, with logging accompanying the code. This systematic approach led to uncovering two true mistakes: data-splitting error (Section~\ref{sec:method-lowlight-data}) and mismatched preprocessing (Section~\ref{sec:qr-runtime-correctness}). The supervisor meetings acted as a project verification point, in particular regarding the choice of including a multi-view stage and continuing with on-device inference after the preliminary diagnosis suggested otherwise.
+
+\section{Dataset preparation and splitting strategy}
+\label{sec:method-splits}
+
+\subsection{Single-view baseline: State Farm}
+
+State Farm Distracted Driver Detection dataset \citep{statefarm2016dataset} consists of 22,424 labeled images belonging to ten classes (safe driving, four classes of texting/phone use classified by hand, adjusting the radio, drinking, reaching behind, hair/makeup, talking to a passenger) taken with one side-mounted camera from 26 drivers. A naive random image-level split and a subject-wise split leaving out entire drivers were compared directly, with the latter used in all subsequent experiments. The exact splitting code is given in Appendix~\ref{app:code}, Listing~\ref{lst:subject-split}. Random split allows one and the same driver's face and surroundings to be in both halves of the split, making it even more complicated with almost duplicate video frames in both halves as well. This results in increased accuracy metrics but does not necessarily imply good generalisation to an unseen driver. The class balance in the resulting splits was verified rather than assumed (Figure~\ref{fig:sf-split-dist}).
+
+\RequiredFigure[0.99\textwidth]{state_farm_subject_wise_split_class_distribution.png}{Class distribution across the State Farm subject-wise train/validation/test splits.}{fig:sf-split-dist}
+
+\subsection{Multi-view extension: SAM-DD}
+
+SAM-DD \citep{yang2024samdd} was recorded on an indoor driving simulator with 42 subjects involved. It was chosen due to providing paired front and side images of the same people performing similar actions, which makes it more challenging than a single-view dataset. Simulator origin is an important drawback, evident in metadata rather than hidden.
+
+There is no official class name mapping for SAM-DD (numerically indexed classes). Therefore, the mapping used in this project was created through the visual inspection of sample images along with the confidence level (high, medium or low) assigned to each class. Two SAM-DD classes (adjusting glasses and fatigue/head drop) have no equivalents among State Farm's classes and had to be completely omitted rather than put in the closest class, thus introducing silent mislabelling.
+
+A common metadata format (image\_path, label\_id, label\_name, subject\_id, dataset\_name, camera\_view, vehicle\_id, lighting, modality, split, is\_synthetic, notes) was adopted in order to include any dataset without changing the pipeline. In a bidirectional case, special care had to be taken regarding left and right classes, since the front camera mirrored the image with respect to the side-mounted one.
+    
+\subsection{Lighting extension: the Low-Light Driver Distraction Dataset}
+\label{sec:method-lowlight-data}
+
+The lighting experiment used the Novel Driver Distraction Dataset with low-light support \citep{saad2020lowlight,saad2020dataset}. It contains 52,350 images from 70 drivers using the same ten-class taxonomy as State Farm. Although it is described as a low-light dataset, inspection showed that only 9 drivers, contributing 6,750 images, were recorded at night. The remaining 61 drivers were recorded during the day using the same infrared-capable camera. This was established using mean greyscale brightness with a threshold of 40 and confirmed by manually inspecting samples from more than eighteen drivers.
+
+Four classes retained an unresolved hand-side ambiguity: "texting\_left", "texting\_right", "phone\_left" and "phone\_right". The side-profile images did not always make the driver's left and right hands distinguishable. These classes were retained because removing them would change the shared ten-class task, but the ambiguity is considered when interpreting the class-level results.
+
+A split error was also found during preparation. The first split placed none of the nine night drivers in the test partition, meaning that an apparent night evaluation contained no night subjects. The correction was to split the day and night driver pools independently using the same 70/15/15 proportions. This ensured that night drivers were represented in the training, validation and test partitions.
+
+The final lighting experiment combined State Farm daytime data with only the 6,750 real night images. The other 45,600 daytime images from the infrared-capable camera were excluded because including them would mix lighting and sensor-modality changes in the same comparison.
+
+\subsection{Subject-wise integrity across every dataset and stage}
+\label{sec:method-split-integrity}
+
+Since subject-wise evaluation lies in the basis of all figures in this report, Table~\ref{tab:split-integrity} shows the split for each dataset and stage. The unit of splitting is an individual driver; there is no subject repeated in several splits and all test statistics from Chapter~\ref{ch:results} are calculated based on the held-out subjects, with no reusage of either training nor validation data. Splits were made once per dataset and then kept as is, so that cross-view and lighting experiments are evaluated on the same held-out State Farm drivers as the baseline. Driver names are listed in Appendix~\ref{app:splits}.
+
+\begin{table}[htbp]
+\centering
+\caption{Subject-wise splitting applied consistently across all datasets and stages. No subject appears in more than one partition and all reported test figures come from the held-out subjects listed here. The Low-Light daytime rows are excluded from training for the reason given in Section~\ref{sec:method-lowlight-data}.}
+\label{tab:split-integrity}
+\footnotesize
+\begin{tabular}{lllcc}
+\toprule
+\textbf{Dataset} & \textbf{Used in} & \textbf{Split unit} & \textbf{Subjects (tr/val/te)} & \textbf{Images (tr/val/te)} \\
+\midrule
+State Farm & all three stages & driver & 18 / 4 / 4 & 15{,}899 / 3{,}439 / 3{,}086 \\
+SAM-DD (both views) & cross-view & subject & 29 / 6 / 7 & 64{,}312 / 16{,}324 / 14{,}906 \\
+Low-Light DD (night) & low-light & driver & 6 / 1 / 2 & 4{,}500 / 750 / 1{,}500 \\
+Low-Light DD (day) & excluded & driver & 42 / 9 / 10 & 31{,}425 / 6{,}675 / 7{,}500 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The unified table holds 170{,}316 rows. The cross-view experiment draws 80{,}211 training images and 17{,}992 test images from it and the lighting experiment draws 20{,}399 and 4{,}586.
+
+\section{Model selection and training}
+
+Three architectures were compared: a custom CNN used as a from-scratch reference, MobileNetV2 \citep{sandler2018mobilenetv2} and EfficientNet-B0 \citep{tan2019efficientnet}. The two transfer-learning models used ImageNet-trained weights with newly added classification heads. All three models used the same subject-wise partitions and were evaluated using accuracy, macro F1, weighted F1, per-class precision and recall, confusion matrices, throughput and model size. MobileNetV2 and EfficientNet-B0 were selected because both offer a useful balance between classification performance and deployment cost.
+
+The two robustness experiments followed the same training procedure. The backbone was first frozen while the new classification head was trained for ten epochs. The final 30 MobileNetV2 layers were then unfrozen and fine-tuned for another ten epochs using a learning rate of $1\times10^{-5}$. This prevented large early updates from damaging the pretrained features before the new head had learned useful representations. Early stopping with a patience of five restored the best validation checkpoint. A fixed random seed improved repeatability, although a single run does not measure run-to-run variation, as discussed in Section~\ref{sec:eval-limitations}.
+
+\section{Quantisation and on-device deployment}
+
+\subsection{Model conversion}
+\label{sec:method-conversion}
+
+The trained model had to be converted into a lightweight format the board's processor could run. This needed its own software setup matching the exact version the model was saved under, since the everyday setup could open the file but produced a version the board could not run at all. The fix used is given in Appendix~\ref{app:code}, Listing~\ref{lst:monkeypatch}.
+
+A second problem showed up during conversion: a layer used only during training kept sneaking unsupported steps into the exported model, even after being switched off, because that layer could not be cleared the normal way in this software version. The fix was to override its behaviour directly so it simply passed its input straight through. This was checked two ways: the exported model contained none of the unwanted steps and gave identical results to the original. The model was then compressed to 8-bit precision, calibrated against 120 sample images \citep{tensorflowlite}.
+
+\subsection{Board bring-up and the ARM32 runtime issue}
+\label{sec:arm32-issue}
+
+The board, a Zynq-based ARM processor borrowed from the university's electronics lab, was set up with a community-built Linux image \citep{pynq}, since the manufacturer's own tools do not support this chip. Bringing it online also fixed two smaller, unrelated software problems. The bigger issue was that the only available version of the software needed to run the model on this device loaded it correctly but crashed the moment it tried to compute a prediction. Memory was ruled out, both versions of the compressed model failed identically and turning off various accelerations made no difference. The real cause was a mismatch between what instructions this processor could actually run and what the published software assumed every chip of its type could do: an older processor missing one math instruction the software relied on.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{zc702_cpuinfo.png}
+\caption{Confirming directly on the board that this processor is missing the math instruction the published software assumed it would have.}
+\label{fig:cpuinfo}
+\end{figure}
+
+The fix was to rebuild that software from scratch on the board itself, targeting the processor's real capabilities. This meant building a basic tool from scratch first too, since the board's software was too old to have one ready-made. Building it natively, rather than elsewhere and copying it across, let the process detect exactly what the chip supports rather than guessing. This solved the crash, confirmed by comparing predictions directly against the reference version (Section~\ref{sec:qr-runtime-correctness}).
+
+\section{FPGA alert-controller design and verification}
+\label{sec:fpga-alert-design}
+
+A full hardware version of the classifier was considered early on, in line with a fallback plan, but judged unlikely to reach a working state in the time available \citep{lu2025hardware,parra2023methodology}. Instead, the hardware work focuses on the stage right after the classifier: turning a raw prediction into an alert. This was built as a small circuit that only raises an alert after eight confident "distracted" readings in a row and clears it after eight confident "safe" readings in a row, matching the same cut-off already proven in the software version. Reusing an already-working idea in hardware, rather than a separate rule, keeps the design grounded in something already shown to work.
+
+This was checked two ways. A standalone test ran the logic against ten made-up edge cases and 28 real predictions from the trained model, including two real mistakes it made, were replayed through a simulated version of the full link between camera, processor and alert circuit, to check the design handles real, imperfect data. The circuit was then built for a low-cost board, chosen deliberately as an affordable target, using Vivado 2017.4 in batch mode. The full design is in Appendix~\ref{app:code}, Listing~\ref{lst:verilog-controller}.
+
+\section{Alert delivery, tools and test strategy}
+
+To turn a detection into something a driver or fleet manager would see, the board runs a continuous capture-classify-alert loop, using the same logic as the hardware version above. Every alert, with the photo that triggered it, is sent to a small server, which notifies a phone app. A buzzer wired to the board gives a second, independent alert at the same moment, so a driver is warned even without a phone nearby. This needed a small custom hardware addition, built, tested and loaded onto the board, exposing a control pin with no way of being switched on before \citep{xilinx2019ug850} - the one part of this project's hardware work tested on real equipment rather than estimated (Section~\ref{sec:qr-fpga}). Full detail and the three layers the alert path was checked in, are in Appendix~\ref{app:buzzer} and Appendix~\ref{app:alertpath}.
+
+The AI side used Python and standard machine-learning tools; the hardware side used the manufacturer's own design software and the board's Linux environment. Testing happened at every stage, not just the end. Each dataset was checked immediately after being added, for missing labels, lost images, or a driver appearing in more than one split, exactly what caught a real bug early on. Every accuracy figure comes from data the model never saw during training. The conversion was checked both structurally and by confirming matching output and the same standard was applied on the board, checking predictions actually matched rather than assuming a crash disappearing meant everything was correct.
+
+\section{Ethical, legal, professional and social issues}
+
+Formal ethics approval was not required because the experiments used existing public datasets \citep{statefarm2016dataset,yang2024samdd,saad2020dataset}, together with limited test footage recorded by the researcher. No participants were recruited and no third-party personal data were collected. The datasets were stored locally rather than redistributed, in accordance with their licences; one dataset is restricted to non-commercial use.
+
+The available datasets do not provide sufficient demographic information to assess performance fairly across age, ethnicity or body type. No claim of demographic fairness is therefore made. Driver monitoring also creates a privacy concern because a camera continuously observes the driver. Local processing reduces this risk because ordinary footage remains on the device, although the current prototype sends the image associated with an alert. A practical product should allow that feature to be disabled and should apply clear retention and access controls.
+
+Both missed distractions and false alerts have safety consequences. Repeated false alerts may cause users to ignore or disable the system, which is why the decision logic requires several confident predictions before raising an alert. In line with the BCS Code of Conduct \citep{bcs2026conduct}, the system is presented as a research prototype rather than a finished safety product. Access to borrowed hardware also constrained the work, since experiments that risked damaging the board could not reasonably be attempted.
+
+
+
+
+
+

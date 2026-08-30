@@ -53,7 +53,6 @@ real_test_images/
 *.zip
 *.rar
 *.7z
-!report/latex_source.zip
 *.tar
 *.gz
 
@@ -152,3 +151,8 @@ desktop.ini
 !fpga/sim/camera_link_sim_run.log
 !fpga/reports/synth_run.log
 !fpga/reports/real_model_session_sequence.csv
+
+# ============================================================
+# Personal signature - never publish this, keep it local only
+# ============================================================
+report/latex_source/images/my_signature.png

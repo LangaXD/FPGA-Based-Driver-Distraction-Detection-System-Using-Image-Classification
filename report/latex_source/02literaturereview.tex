@@ -1,0 +1,92 @@
+%!TEX root = main.tex
+
+\chapter{Literature Review}
+\label{ch:litreview}
+
+\section{How the literature for this project was selected}
+\label{sec:lit-prisma}
+
+This review was based on a PRISMA-style search and screening exercise completed in June 2026 \citep{page2021prisma,prisma2020}. The search covered IEEE Xplore, Google Scholar, SpringerLink, MDPI, Elsevier, ScienceDirect, arXiv, dataset records and citation tracing. Search terms were organised around three parts of the project which are RGB driver-distraction classification, embedded deployment and lighting robustness.
+
+The search identified 90 records, of which 22 were duplicates. Following title, abstract and full-text screening, 31 studies were retained: 20 core studies and 11 supporting studies. Figure~\ref{fig:prisma} summarises the process, while the complete search and exclusion details are provided in Appendix~\ref{app:prisma}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\textwidth]{fig_prisma_flow_diagram.png}
+\caption{PRISMA-style selection process for the systematic search underpinning this review (90 records identified, 20 core studies selected).}
+\label{fig:prisma}
+\end{figure}
+
+Two patterns from the review shaped this project. First, accuracy values from different studies are not directly comparable when their datasets and splitting protocols differ. For example, a high result from a random image-wise split may provide weaker evidence of generalisation than a lower result from a subject-wise split. Second, claims about embedded deployment are more common than measurements collected on the target device. These findings motivated the consistent use of subject-wise evaluation and the separation of laptop and on-device measurements in Chapter~\ref{ch:results}.
+
+\ReadableFigure[0.96\textwidth]
+{fig_reported_accuracy_comparison.png}
+{Reported accuracy across the core studies. Differences reflect the datasets and evaluation protocols as well as model performance.}
+{fig:reported-accuracy}
+
+\ReadableFigure[0.96\textwidth]
+{fig_deployment_maturity.png}
+{Deployment maturity evidence across the selected studies. Measurements collected on embedded target devices are less common than offline evaluations.}
+{fig:deployment-maturity}
+
+\FloatBarrier
+
+\section{Image-based driver distraction detection}
+
+The application of CNNs for image-based distraction detection is a well-established topic. In particular, \citet{valeriano2018recognition} train a CNN on the State Farm dataset used in this research, demonstrating good within-view results and showing that ten classes taxonomy can be learned using only one side-mounted camera without any other sensors. \citet{alshalfan2021detecting} and \citet{aljasim2022e2dr} continue research in this direction. While the first paper evaluates several deep architectures on the same task, the second paper presents an ensemble technique that, once the distraction is detected, gives a recommendation as to how to respond to it, thus considering classification a part of the bigger decision-making process – an approach close to the one taken in this paper, where the decision stage after the classifier is carefully designed.
+
+\citet{abouelnaga2018} and \citet{eraqi2019driver} have introduced AUC Distracted Driver dataset and an ensemble method using it, thus providing evidence that the State Farm taxonomy is transferable to an independently collected dataset. It has become the motivation behind the choice of AUC V2 during the multi-view stage, despite being unavailable at the time of this project. General reviews by \citet{kashevnik2021driver}, \citet{horgan2021} and \citet{dontoh2025visual} confirm the existence of the above pattern rather than provide just one example: the reported systems are mostly evaluated on a single camera position and under a certain lighting condition, which are seen as properties of the dataset rather than its variables to be tested.
+
+MobileNetV2 and EfficientNet-B0 were selected as transfer-learning candidates because they offer different compromises between accuracy and computational cost. MobileNetV2 was designed for resource-constrained deployment \citep{sandler2018mobilenetv2}, while EfficientNet-B0 provides a compact benchmark based on balanced scaling of network depth, width and resolution \citep{tan2019efficientnet}.
+
+\section{Subject-wise evaluation, dataset bias and domain shift}
+
+The issue that repeatedly emerges in the context of this field and is handled in this work rigorously is subject leakage. If a driver appears in the training and test sets simultaneously, the split into training and testing samples randomly based on images overestimates the real-world accuracy of a model, as it is able to use the appearance features (clothing, body build, seat position, etc.) of the driver rather than his behavior and consecutive video frames make this effect even more pronounced. This becomes the main reason why numbers presented in this field cannot be easily compared between papers. Thus, the subject-wise protocol described in Section~\ref{sec:method-splits} is consistently used on all datasets and project stages. \citet{wang2023driver} address a different but similar problem of domain shift due to changes in the conditions of recordings and demonstrate a significant drop of performance in such case. This result is consistent with the ones presented here, although the magnitude of drop under the lighting shift in real conditions (Section~\ref{sec:qr-lowlight}) is significantly higher.
+
+\section{Multi-view and cross-view driver monitoring}
+\label{sec:lit-crossview}
+
+The prevalence of evaluations based on single-view data is not due to the lack of multi-view data and techniques. \citet{jegham2019mdad} created the MDAD, a multi-view, multi-modal driver action dataset built off synchronized side and front cameras, akin to SAM-DD \citep{yang2024samdd} used in the current project, proving that synchronization-based generation of cross-view data is a known approach, not a specific feature of this work. \citet{ortega2020dmd} and \citet{wang2023hundreddriver} extend the approach to larger multi-modal datasets. A different approach is taken by \citet{sengar2023poseviNet}, who extract the pose data from each viewpoint and combine it with a vision transformer, thus showing that viewpoint-aware features may be a plausible alternative to the fine-tuning approach employed in this work.
+
+Most relevantly, \citet{bhalla2025crossview} tackle the cross-view issue in a two-step process: they learn viewpoint-invariant features through contrastive learning across viewpoints and then adapt these features to different sensors without target labeling, obtaining significant improvements over the older baselines. This approach is far superior to the technique used in this work of fine-tuning of the last 30 layers of an already trained backbone network using pooled multi-view data. However, the comparison is telling because despite the relatively simple fine-tuning technique used in this work, it was still able to recover most of the accuracy losses from the evaluation of the frozen-backbone network in a cross-view setup (Section~\ref{sec:qr-crossview}). Therefore, fine-tuning of the model on real paired data is a reasonable middle-ground for a project of this type, although contrastive adaptation is a more principled approach.
+
+One distinctive thing about this project compared to the surveyed literature is that it explicitly evaluates the cross-view gap in a frozen backbone "before" taking any steps to address it. Very few of the surveyed papers provide an equivalent "before" baseline, making it hard to judge the typical size of the raw gap for a MobileNetV2-class model and the degree to which the claimed improvements are due to the suggested method vs just having multi-view training data available.
+
+\section{Low-light, infrared and near-infrared driver monitoring}
+\label{sec:lit-lowlight}
+
+Nighttime driver monitoring could be considered the most relevant application scenario for a driver monitoring system of this kind, yet it appears to be underrepresented in the RGB-based classification literature. The most directly relevant work is \citet{saad2020lowlight}, who created the Novel Driver Distraction Dataset with low-light support \citep{saad2020dataset}, specifically because the benchmark datasets of the time lacked nighttime data and this is the dataset used in the current project (Section~\ref{sec:method-lowlight-data}). \citet{janveja2020insight} position low-light driver state monitoring as an embedded systems problem rather than a modeling one.
+
+Methodologically, the key work in this area is \citet{shen2023visible}. It proposes a way to solve both day and nighttime driver state classification using visible-to-infrared image translation, producing images looking like infrared ones. This paper exemplifies the strengths and weaknesses of the synthetic approach: it offers a way to augment a small pool of night training data but is explicitly presented as an approximation, not a substitute for the real deal. This particular distinction is crucial in the current project's context. The initial idea for the lighting stage of this project included the translation technique described in \citet{shen2023visible}. However, the intentional decision was made to abandon it once real low-light data was available, since a synthetic transformation cannot duplicate the effect that infrared illumination has on a scene, namely, the loss of color information, the way skin and fabric reflect near-infrared light and the noise in the image caused by the low-light operation of the camera. That is why Section~\ref{sec:qr-lowlight} relies on the real footage with infrared illumination and all conclusions about lighting robustness made in this report are about real footage, not an approximation.
+
+\section{Quantisation and embedded/FPGA deployment}
+\label{sec:lit-embedded}
+
+Edge deployment introduces costs that model accuracy alone does not show. \citet{abushahla2025quantization} identify INT8 post-training quantisation as a common first step for reducing the storage and computational cost of edge-AI models. The accuracy reductions measured in this project, ranging from 0.8 to 4.6 percentage points across different samples, are consistent with the small but data-dependent losses discussed in that literature. \citet{hariharan2023edge} similarly examine the practical requirements of deploying AI-based driver-monitoring systems.
+
+The FPGA literature shows the difference between running a model on an embedded processor and accelerating it in programmable logic. \citet{parra2023methodology} describe a custom AXI-Lite accelerator for a TensorFlow-Lite-quantised CNN on a Zynq device. More directly, \citet{lu2025hardware} implement a MobileNetV2-based driver-behaviour accelerator on the same XC7Z020 device family used here, achieving 13.05 FPS at 1.25 W.
+
+Those systems are substantially more complex than the implementation in this project. Here, the classifier runs on the Cortex-A9 processor and the FPGA fabric handles only the alert-decision stage. This choice kept the work achievable within the project scope, but produced a much lower speed of approximately 9.15 seconds per inference. Reporting that limitation alongside the successful deployment gives a more realistic comparison with dedicated accelerators.
+
+\section{Gaps identified and positioning of this project}
+
+Figure \ref{fig:landscape} demonstrates how this project fits into the landscape of the surveyed literature, while Figure \ref{fig:dataset-method} shows the regions of applicability of different methods families to different datasets. The regions without the data (areas without information in comparison to areas with information) are equally valuable. There are four gaps revealed, each answering one of the research questions of Section \ref{sec:research-questions}.
+
+\begin{enumerate}[itemsep=0.2em]
+	\item \textbf{Camera-view robustness is claimed more often than it is measured.} Few papers report the size of the problem for a simple baseline before fixing it (RQ2).
+	\item \textbf{Lighting robustness is usually approximated rather than tested on real infrared-illuminated data} \citep{shen2023visible}. This project measures the day-to-night collapse on real captured footage (RQ3).
+	\item \textbf{Quantisation and deployment costs are often reported partially or not at all.} Laptop throughput is often given with no matching on-target measurement (RQ4).
+	\item \textbf{The decision stage that turns per-frame predictions into a stable alert is rarely treated as its own designed and tested part of the system} (RQ5).
+\end{enumerate}
+
+\ReadableFigure[0.99\textwidth]
+{fig_research_landscape_project_pathway_v3.png}
+{The surveyed research landscape and this project's pathway through it, produced during the systematic survey that preceded the practical work.}
+{fig:landscape}
+
+\ReadableFigure[0.99\textwidth]
+{fig_dataset_method_heatmap.png}
+{Dataset and method coverage across the core studies. Sparse regions indicate combinations that are under-explored rather than combinations that do not work.}
+{fig:dataset-method}
+
+\FloatBarrier

@@ -1,0 +1,11 @@
+%!TEX root = main.tex
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Most published driver-distraction detection systems are trained and evaluated using images from one fixed camera position and one lighting condition, while deployment speed is often reported only on a host computer. This project investigates how performance changes when camera viewpoint and lighting vary and whether a complete detection-and-alert pipeline can be demonstrated on low-cost embedded hardware.
+
+A custom CNN, MobileNetV2 and EfficientNet-B0 were trained on the State Farm Distracted Driver Detection dataset using a subject-wise split, which kept test drivers out of the training data. MobileNetV2 performed best, reaching 84.67\% test accuracy and 84.01\% macro F1. Camera-view robustness was then evaluated using State Farm and the multi-view SAM-DD dataset. A frozen-backbone model achieved 75.94\% mixed-view accuracy, with uneven results between views. Fine-tuning increased this to 91.76\%. For lighting, the daytime model was tested on real infrared-illuminated night footage and achieved only 19.53\% accuracy, with zero recall in eight of the ten classes. Training with real night data raised night-time accuracy to 71.13\%, although daytime accuracy fell by 3.5 percentage points.
+
+The fine-tuned model was converted to INT8 TensorFlow Lite, reducing its size from 20.78 MB to 2.60 MB at a cost of 2.7 accuracy points. It was deployed on a Xilinx ZC702 after an instruction-set incompatibility in the available runtime was diagnosed and corrected. The board achieved 77.3\% accuracy on the deployment sample, while a separate correctness test produced agreement on 100 out of 100 predictions against the reference runtime. However, inference took approximately 9.15 seconds per image, making latency the main deployment limitation. The alert-decision logic was also verified using real model outputs and synthesised for a low-cost FPGA target using 18 lookup tables and 13 flip-flops, with 7.276 ns of positive timing slack.
+
+The findings show that robustness to viewpoint and lighting must be measured and trained explicitly. They also demonstrate that low-cost embedded deployment is feasible, although the present CPU implementation is not fast enough for a practical real-time system.
